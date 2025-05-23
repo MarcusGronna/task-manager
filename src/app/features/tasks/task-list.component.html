@@ -1,0 +1,20 @@
+<!-- 
+https://material.angular.dev/components/list/overview
+https://material.angular.dev/components/checkbox/overview
+https://angular.dev/api/common/AsyncPipe 
+-->
+
+<h2>Uppgifter</h2>
+
+<!-- Material-listcontainer -->
+<mat-list>
+  <!-- loopar över tasks -->
+  <mat-list-item *ngFor="let t of tasks$ | async">
+    <!-- binder done och växlar status -->
+    <mat-checkbox [checked]="t.done" (change)="toggle(t)"> </mat-checkbox>
+
+    <span class="title">{{ t.title }}</span>
+    <!-- statusetikett -->
+    <span class="status">{{ status(t) }}</span>
+  </mat-list-item>
+</mat-list>
