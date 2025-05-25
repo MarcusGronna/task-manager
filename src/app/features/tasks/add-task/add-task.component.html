@@ -1,0 +1,47 @@
+<!-- 
+ Ger ett responsivt kort med två fält (titel krävs, beskrivning valfri) 
+ och en "Spara"-knapp. Angular hanterar validering och Material ger styling
+
+Docs:
+
+https://angular.dev/guide/forms/reactive-forms
+https://material.angular.dev/components/form-field/overview
+https://material.angular.dev/components/card/overview 
+-->
+
+<p>add-task works!</p>
+
+<!-- Yttre kort för Material-layout -->
+<mat-card>
+  <h2>Lägg till uppgift</h2>
+
+  <!-- Reactive Forms binder form-objektet i TS-filen -->
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <!-- Titel-fält ------------------------------- -->
+    <mat-form-field appearance="outline" class="full">
+      <!-- full = 100% bredd -->
+      <mat-label>Titel</mat-label>
+      <input matInput formControlName="title" required />
+
+      <mat-error *ngIf="form.controls.title.hasError('required')">
+        Titel krävs
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Beskrivnings-fält ------------------ -->
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Beskrivning</mat-label>
+      <textarea matInput rows="3" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <!-- Spara-knappen ----------------------- -->
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid"
+    >
+      Spara
+    </button>
+  </form>
+</mat-card>

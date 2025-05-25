@@ -3,9 +3,10 @@
  * Denna vid prod.
  *
  * https://angular.dev/tools/cli/environments
+ * https://github.com/expressjs/cors#readme
  */
 
 export const environment = {
   production: true,
-  apiUrl: '*',
+  apiUrl: 'https://trainingdataapi.onrender.com',
 };

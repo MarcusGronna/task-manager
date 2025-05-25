@@ -2,12 +2,20 @@ import { Component, inject } from '@angular/core'; // komponent & DI-API
 import { AsyncPipe, NgFor } from '@angular/common';
 import { MatListModule } from '@angular/material/list'; // Material-list
 import { MatCheckboxModule } from '@angular/material/checkbox'; // Material-checkbox
-import { TaskService } from './task.service'; // datatjänst
-import { Task } from '../../models/task.model'; // datatyp
+import { TaskService } from '../../../../services/task.service'; // datatjänst
+import { Task } from '../../../models/task.model';
+import { AddTaskComponent } from '../add-task/add-task.component'; // datatyp
 
 @Component({
   selector: 'app-task-list',
-  imports: [NgFor, AsyncPipe, MatListModule, MatCheckboxModule],
+  standalone: true,
+  imports: [
+    NgFor,
+    AsyncPipe,
+    MatListModule,
+    MatCheckboxModule,
+    AddTaskComponent,
+  ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
 })
@@ -22,7 +30,7 @@ export class TaskListComponent {
   }
 
   // Text för status
-  status(t: Task) {
+  statusLabel(t: Task) {
     return t.done ? '✔️ Klar' : '🕓 Pågår';
   }
 }
