@@ -23,9 +23,8 @@ https://material.angular.dev/components/card/overview
       <mat-label>Titel</mat-label>
       <input matInput formControlName="title" required />
 
-      <mat-error *ngIf="form.controls.title.hasError('required')">
-        Titel krävs
-      </mat-error>
+      @if (form.controls.title.hasError('required')){
+      <mat-error> Titel krävs </mat-error> }
     </mat-form-field>
 
     <!-- Beskrivnings-fält ------------------ -->

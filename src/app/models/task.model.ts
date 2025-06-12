@@ -11,9 +11,12 @@
 // prettier-ignore
 
 export interface Task {         // kontrakt för en uppgifts-post,
-  _id: string;                  // MongoDB-ID,
+  _id: string; 
+  projectId: string;                 // ID,
   title: string;                // titel på uppgiften,
   description?: string;         // valfri beskrivning på uppgiften,
-  done: boolean;                // true om uppgiften är klar,
+  done: boolean;    
+  priority: string;            // true om uppgiften är klar,
+  deadline: string;
   createdAt?: Date;             // valfritt - datum när posten skapades
 }

@@ -19,6 +19,7 @@ import { inject, Injectable } from '@angular/core'; // DI-verktyg
 import { HttpClient } from '@angular/common/http'; // HTTP-klient :
 import { Observable, tap, EMPTY, catchError, BehaviorSubject } from 'rxjs'; // RxJS strömtyp
 import { Task } from '../app/models/task.model'; // mitt interface
+import { TaskCreateDto } from '../app/models/task-create.dto';
 import { environment } from '../environments/environment'; // miljö-konstant
 
 @Injectable({ providedIn: 'root' }) // registrerar som global singleton

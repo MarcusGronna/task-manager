@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { TaskService } from '../../../../services/task.service';
+import { TaskCreateDto } from '../../../models/task-create.dto';
 
 @Component({
   selector: 'app-add-task',
@@ -40,12 +41,26 @@ export class AddTaskComponent {
   });
 
   // submit-funktion
+  // save() {
+  //   if (this.form.valid) {
+  //     this.taskService.add(
+  //       this.form.getRawValue() as { title: string; description?: string } // POST till backend
+  //     );
+  //     this.router.navigate(['/task']); // tillbaka till listan
+  //   }
+  // }
+
   save() {
-    if (this.form.valid) {
-      this.taskService.add(
-        this.form.getRawValue() as { title: string; description?: string } // POST till backend
-      );
-      this.router.navigate(['/task']); // tillbaka till listan
-    }
+    if (this.form.invalid) return;
+
+    const dto: TaskCreateDto = {
+      ...this.form.getRawValue(),
+      projectId: 'p1',
+      priority: 'medium',
+      deadline: new Date().toISOString(),
+    };
+
+    this.taskService.add(dto);
+    this.router.navigate(['/task']);
   }
 }
