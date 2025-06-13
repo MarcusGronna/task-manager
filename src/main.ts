@@ -13,10 +13,13 @@ import {
 import { importProvidersFrom } from '@angular/core';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from './services/in-memory-data.service';
+import { provideRouter } from '@angular/router';
+import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
+    provideRouter(routes),
     // befintligt HttpClient-stöd
     provideHttpClient(withInterceptorsFromDi()),
 

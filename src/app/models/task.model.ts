@@ -11,7 +11,7 @@
 // prettier-ignore
 
 export interface Task {         // kontrakt för en uppgifts-post,
-  _id: string; 
+  id: string; 
   projectId: string;                 // ID,
   title: string;                // titel på uppgiften,
   description?: string;         // valfri beskrivning på uppgiften,

@@ -1,0 +1,19 @@
+<p>project-list works!</p>
+
+<h2>Projekt</h2>
+
+<button mat-raised-button color="accent" routerLink="/projects/new">
+  + Nytt projekt
+</button>
+
+@if (projects$ |async; as projects) {
+<mat-nav-list>
+  @for (project of projects; track project.id ) {
+  <a mat-list-item [routerLink]="['/tasks', { projectId: project.id }]"
+    >{{ project.name }} - {{ project.deadline }}
+  </a>
+  }
+</mat-nav-list>
+} @else {
+<p>Inga projekt ännu. Lägg till ett!</p>
+}
