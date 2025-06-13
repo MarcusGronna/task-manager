@@ -5,17 +5,19 @@ https://angular.dev/api/common/AsyncPipe
 -->
 
 <h2>Uppgifter</h2>
-
+@if (showCreated) {
+<p class="info">Uppgift tillagd!</p>
+}
 <!-- Material-listcontainer -->
 <mat-list>
   <!-- loopar över tasks -->
-  <mat-list-item *ngFor="let t of tasks$ | async">
+  <mat-list-item *ngFor="let task of tasks$ | async">
     <!-- binder done och växlar status -->
-    <mat-checkbox [checked]="t.done" (change)="toggle(t)"> </mat-checkbox>
+    <mat-checkbox [checked]="task.done" (change)="toggle(task)"> </mat-checkbox>
 
-    <span class="title">{{ t.title }}</span>
+    <span class="title">{{ task.title }}</span>
     <!-- statusetikett -->
-    <span class="status">{{ statusLabel(t) }}</span>
+    <span class="status">{{ statusLabel(task) }}</span>
   </mat-list-item>
 </mat-list>
 

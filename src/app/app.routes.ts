@@ -10,12 +10,17 @@ import { TaskListComponent } from './features/tasks/task-list/task-list.componen
 import { ProjectListComponent } from './features/projects/project-list/project-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectAddComponent } from './features/projects/project-add/project-add.component';
+import { AddTaskComponent } from './features/tasks/add-task/add-task.component';
 
 export const routes: Routes = [
-  // lazy-load
   { path: '', redirectTo: 'tasks', pathMatch: 'full' },
   { path: 'projects', loadComponent: () => ProjectListComponent },
   { path: 'projects/new', loadComponent: () => ProjectAddComponent },
+  { path: 'tasks/:projectId/new', loadComponent: () => AddTaskComponent },
+  {
+    path: 'tasks/:projectId/edit/:taskId',
+    loadComponent: () => AddTaskComponent,
+  },
   { path: 'tasks', loadComponent: () => TaskListComponent },
   { path: '**', component: PageNotFoundComponent },
 ];

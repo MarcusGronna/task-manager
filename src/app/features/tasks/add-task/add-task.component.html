@@ -13,7 +13,7 @@ https://material.angular.dev/components/card/overview
 
 <!-- Yttre kort för Material-layout -->
 <mat-card>
-  <h2>Lägg till uppgift</h2>
+  <h2>{{ isEdit ? "Redigera" : "Ny " }} uppgift</h2>
 
   <!-- Reactive Forms binder form-objektet i TS-filen -->
   <form [formGroup]="form" (ngSubmit)="save()">
@@ -33,6 +33,34 @@ https://material.angular.dev/components/card/overview
       <textarea matInput rows="3" formControlName="description"></textarea>
     </mat-form-field>
 
+    <!-- Prioritet ------------------------- -->
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Prioritet</mat-label>
+      <mat-select formControlName="priority">
+        <mat-option value="low">Låg</mat-option>
+        <mat-option value="medium">Medium</mat-option>
+        <mat-option value="high">Hög</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Deadline + snabbknappar -->
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Deadline</mat-label>
+      <input
+        matInput
+        [matDatepicker]="dp"
+        formControlName="deadline"
+        required
+      />
+      <mat-datepicker #dp></mat-datepicker>
+      <button mat-button matSuffix type="button" (click)="plusDays(1)">
+        +1 dag
+      </button>
+      <button mat-button matSuffix type="button" (click)="plusDays(7)">
+        +7 dagar
+      </button>
+    </mat-form-field>
+
     <!-- Spara-knappen ----------------------- -->
     <button
       mat-raised-button
@@ -40,7 +68,7 @@ https://material.angular.dev/components/card/overview
       type="submit"
       [disabled]="form.invalid"
     >
-      Spara
+      {{ isEdit ? "Spara ändringar" : "Spara uppgift" }}
     </button>
   </form>
 </mat-card>

@@ -12,7 +12,7 @@
 
 export interface Task {         // kontrakt för en uppgifts-post,
   id: string; 
-  projectId: string;                 // ID,
+  projectId: string;             // ID,
   title: string;                // titel på uppgiften,
   description?: string;         // valfri beskrivning på uppgiften,
   done: boolean;    
