@@ -15,7 +15,12 @@ https://angular.dev/api/common/AsyncPipe
     <!-- binder done och växlar status -->
     <mat-checkbox [checked]="task.done" (change)="toggle(task)"> </mat-checkbox>
 
-    <span class="title">{{ task.title }}</span>
+    <div class="grow">
+      <strong>{{ task.title }}</strong>
+      <br />
+      Deadline: {{ task.deadline }} | Prio: {{ task.priority }}
+    </div>
+
     <!-- statusetikett -->
     <span class="status">{{ statusLabel(task) }}</span>
   </mat-list-item>

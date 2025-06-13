@@ -93,9 +93,11 @@ export class AddTaskComponent implements OnInit {
 
     const dto: TaskCreateDto = {
       ...this.form.getRawValue(), // title, description, etc.
-      projectId: 'p1', // koppla till projektet
+
+      // projectId: 'p1', // koppla till projektet
       priority: 'medium',
-      deadline: new Date().toISOString(), // ISO
+      deadline: new Date().toISOString(),
+      projectId: '',
     };
 
     // Välj rätt service-anrop

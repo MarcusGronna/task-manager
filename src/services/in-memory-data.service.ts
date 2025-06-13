@@ -28,26 +28,26 @@ export class InMemoryDataService implements InMemoryDbService {
 
     // Default-data första gången
     const projects: Project[] = [
-      {
-        id: 'p1',
-        name: 'Demo-projekt',
-        description: 'Visar hur in-memory-db fungerar',
-        deadline: '2025-06-15',
-        createdAt: new Date().toISOString(),
-      },
+      // {
+      //   id: 'p1',
+      //   name: 'Demo-projekt',
+      //   description: 'Visar hur in-memory-db fungerar',
+      //   deadline: '2025-06-15',
+      //   createdAt: new Date().toISOString(),
+      // },
     ];
 
     const tasks: Task[] = [
-      {
-        id: 't1',
-        projectId: 'p1',
-        title: 'Första uppgiften',
-        description: 'Projektets första uppgift',
-        done: false,
-        priority: 'medium',
-        deadline: '2025-06-15',
-        createdAt: new Date(),
-      },
+      // {
+      //   id: 't1',
+      //   projectId: 'p1',
+      //   title: 'Första uppgiften',
+      //   description: 'Projektets första uppgift',
+      //   done: false,
+      //   priority: 'medium',
+      //   deadline: '2025-06-15',
+      //   createdAt: new Date(),
+      // },
     ];
 
     localStorage.setItem(LS_KEY, JSON.stringify({ projects, tasks }));
@@ -55,29 +55,29 @@ export class InMemoryDataService implements InMemoryDbService {
   }
 
   // En enkel id-generator (om man POST:ar utan _id)
-  // genId<T extends { id?: string }>(collection: T[]): string {
-  //   const nums = collection
-  //     .map((c) => c.id as string | undefined)
-  //     .filter(Boolean)
-  //     .map((s) => +s!.toString().replace(/\D/g, ''));
+  genId<T extends { id?: string }>(collection: T[]): string {
+    const nums = collection
+      .map((c) => c.id as string | undefined)
+      .filter(Boolean)
+      .map((s) => +s!.toString().replace(/\D/g, ''));
 
-  //   const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
-  //   return 'p' + next;
-  // }
+    const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    return 'p' + next;
+  }
 
   // Skriv tillbaka till databasen efter POST/PUT/DELETE
   responseInterceptor(res: ResponseOptions, ri: RequestInfo) {
     // Endast om  det inte var en GET
     if (ri.method !== 'GET') {
       // Läs in äldre data om den finns
-      const stored = localStorage.getItem(LS_KEY);
-      const currentDb = stored ? (JSON.parse(stored) as any) : {};
+      const stored = JSON.parse(localStorage.getItem(LS_KEY) ?? '{}');
+      const db = ri.utils.getDb(); // uppdaterad collection
 
       // Hämta den uppdaterade samlingen från interceptorn
       const newDbState = ri.utils.getDb();
 
       // Slå ihop samlingarna, skriv över enskilda collections, men behåll de som inte förändrats
-      const merged = { ...currentDb, ...newDbState };
+      const merged = { ...stored, ...db }; // behåll övriga
 
       localStorage.setItem(LS_KEY, JSON.stringify(merged));
     }

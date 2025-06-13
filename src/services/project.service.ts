@@ -22,17 +22,22 @@ export class ProjectService {
   }
 
   // POST /projects
-  add(data: Omit<Project, 'id' | 'createdAt'>) {
+  // add(data: Omit<Project, 'id' | 'createdAt'>) {
+  //   return this.http
+  //     .post<Project>(this.base, data)
+  //     .pipe(
+  //       tap((p) => this._projects$.next([...this._projects$.value, p])),
+  //       catchError((err) => {
+  //         console.error(err);
+  //         return EMPTY;
+  //       })
+  //     )
+  //     .subscribe();
+  // }
+  add(dto: Omit<Project, 'id' | 'createdAt'>) {
     return this.http
-      .post<Project>(this.base, data)
-      .pipe(
-        tap((p) => this._projects$.next([...this._projects$.value, p])),
-        catchError((err) => {
-          console.error(err);
-          return EMPTY;
-        })
-      )
-      .subscribe();
+      .post<Project>(this.base, dto)
+      .pipe(tap((p) => this._projects$.next([...this._projects$.value, p])));
   }
 
   // PUT /projects/:id

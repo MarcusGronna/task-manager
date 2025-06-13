@@ -21,6 +21,7 @@ export const routes: Routes = [
     path: 'tasks/:projectId/edit/:taskId',
     loadComponent: () => AddTaskComponent,
   },
+  { path: 'tasks/:projectId', loadComponent: () => TaskListComponent },
   { path: 'tasks', loadComponent: () => TaskListComponent },
   { path: '**', component: PageNotFoundComponent },
 ];

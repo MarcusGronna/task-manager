@@ -43,7 +43,10 @@ export class ProjectAddComponent {
       deadline: new Date(this.form.value.deadline!).toISOString(),
     };
 
-    this.projectService.add(dto); // updatera state + POST
-    this.router.navigate(['/projects']); // navigera tillbaka till listan
+    // updatera state + POST
+    this.projectService.add(dto).subscribe({
+      next: () => this.router.navigate(['/projects']), // navigera tillbaka till listan
+      error: (err) => console.error('POST misslyckades', err),
+    });
   }
 }
