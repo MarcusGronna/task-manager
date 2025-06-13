@@ -1,0 +1,24 @@
+<h2>Dashboard</h2>
+
+<!-- BarChart -->
+<ng-container *ngIf="bar$ | async as bar">
+  <apx-chart
+    [series]="bar.series"
+    [chart]="bar.chart"
+    [xaxis]="bar.xaxis"
+    [dataLabels]="bar.dataLabels"
+    [title]="bar.title"
+  >
+  </apx-chart>
+</ng-container>
+
+<!-- DonutChart -->
+<ng-container *ngIf="donut$ | async as donut">
+  <apx-chart
+    [series]="donut.series"
+    [chart]="donut.chart"
+    [labels]="donut.labels"
+    [responsive]="donut.responsive"
+  >
+  </apx-chart>
+</ng-container>

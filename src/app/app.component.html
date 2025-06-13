@@ -1,26 +1,14 @@
 <h1>Angular Task-Manager</h1>
-<nav>
-  <ul>
-    <li>
-      <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">
-        Tasks
-      </a>
-    </li>
-    <li>
-      <a
-        routerLink="/tasks"
-        routerLinkActive="active"
-        ariaCurrentWhenActive="page"
-      >
-        Tasks
-      </a>
-    </li>
-    <li>
-      <a routerLink="**" routerLinkActive="active" ariaCurrentWhenActive="page">
-        Not-Found
-      </a>
-    </li>
-  </ul>
-</nav>
+<mat-toolbar color="primary">
+  <span class="title">Angular Task-Manager</span>
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/dashboard" routerLinkActive="active-link"
+    >Dashboard</a
+  >
+  <a mat-button routerLink="/projects" routerLinkActive="active-link"
+    >Projects</a
+  >
+</mat-toolbar>
 
 <router-outlet />
