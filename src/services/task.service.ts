@@ -24,6 +24,9 @@ import { environment } from '../environments/environment'; // miljö-konstant
 
 @Injectable({ providedIn: 'root' }) // registrerar som global singleton
 export class TaskService {
+  persistOrder(projectId: string, list: Task[]) {
+    throw new Error('Method not implemented.');
+  }
   // -------------------------------------------------------------------------
   //  DI + konstanter
   // -------------------------------------------------------------------------

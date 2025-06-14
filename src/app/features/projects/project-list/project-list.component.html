@@ -1,5 +1,3 @@
-<p>project-list works!</p>
-
 <h2>Projekt</h2>
 
 <button mat-raised-button color="accent" routerLink="/projects/new">
@@ -8,9 +6,11 @@
 
 @if (projects$ |async; as projects) {
 <mat-nav-list>
-  @for (project of projects; track project.id ) {
-  <a mat-list-item [routerLink]="['/tasks', { projectId: project.id }]"
-    >{{ project.name }} - {{ project.deadline }}
+  @for (p of projects; track p.id) {
+  <a mat-list-item [routerLink]="[p.id, 'tasks']">
+    {{ p.name }} — {{ p.deadline | date : "yyyy-MM-dd" }}
+    <span class="spacer"></span>
+    <mat-chip color="primary" selected>{{ p.taskCount }} tasks</mat-chip>
   </a>
   }
 </mat-nav-list>

@@ -1,3 +1,10 @@
+/**
+ * https://apexcharts.com/
+ *
+ *
+ *
+ */
+
 import { Component, ViewChild, inject, OnInit } from '@angular/core';
 import {
   ApexAxisChartSeries,

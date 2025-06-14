@@ -16,14 +16,28 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', loadComponent: () => DashboardComponent },
-  { path: 'projects', loadComponent: () => ProjectListComponent },
-  { path: 'projects/new', loadComponent: () => ProjectAddComponent },
-  { path: 'tasks/:projectId/new', loadComponent: () => AddTaskComponent },
+  {
+    path: 'projects',
+    children: [
+      { path: '', loadComponent: () => ProjectListComponent },
+      { path: 'new', loadComponent: () => ProjectAddComponent },
+
+      {
+        path: ':projectId/tasks',
+        children: [
+          { path: '', loadComponent: () => TaskListComponent },
+          { path: 'new', loadComponent: () => AddTaskComponent },
+        ],
+      },
+    ],
+  },
+  // { path: 'projects/new', loadComponent: () => ProjectAddComponent },
+  // { path: 'tasks/:projectId/new', loadComponent: () => AddTaskComponent },
   {
     path: 'tasks/:projectId/edit/:taskId',
     loadComponent: () => AddTaskComponent,
   },
-  { path: 'tasks/:projectId', loadComponent: () => TaskListComponent },
-  { path: 'tasks', loadComponent: () => TaskListComponent },
+  // { path: 'tasks/:projectId', loadComponent: () => TaskListComponent },
+  // { path: 'tasks', loadComponent: () => TaskListComponent },
   { path: '**', component: PageNotFoundComponent },
 ];
