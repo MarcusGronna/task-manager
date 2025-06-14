@@ -30,7 +30,5 @@ bootstrapApplication(AppComponent, {
         { delay: 300 } // simulera 300 ms nätverkslatens
       )
     ),
-
-    // provideInMemoryWebApi(InMemoryDataService, { delay: 300 }), // 300 ms nätverkslatens
   ],
 }).catch((err) => console.error(err));

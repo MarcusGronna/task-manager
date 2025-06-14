@@ -1,13 +1,10 @@
-/** Ger typkontroll för att kunna använda till tasks -- 
- * _id: string;                  // MongoDB-ID
-  title: string;                // titel på uppgiften
-  description?: string;         // valfri beskrivning på uppgiften
-  done: boolean;                // true om uppgiften är klar
-  createdAt?: Date;             // valfritt - datum när posten skapades
- * 
+/** Ger typkontroll för att kunna använda till tasks --
+ *
+ *
  * https://www.typescriptlang.org/docs/handbook/2/objects.html
  */
 
+export type TaskPriority = 'low' | 'medium' | 'high';
 // prettier-ignore
 
 export interface Task {         // kontrakt för en uppgifts-post,
@@ -15,8 +12,8 @@ export interface Task {         // kontrakt för en uppgifts-post,
   projectId: string;             // ID,
   title: string;                // titel på uppgiften,
   description?: string;         // valfri beskrivning på uppgiften,
-  done: boolean;    
-  priority: string;            // true om uppgiften är klar,
+  done: boolean;    // true om uppgiften är klar,
+  priority: TaskPriority;            
   deadline: string;
   createdAt?: Date;             // valfritt - datum när posten skapades
 }

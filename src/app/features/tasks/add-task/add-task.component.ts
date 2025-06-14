@@ -7,7 +7,12 @@
  */
 
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +23,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { TaskService } from '../../../../services/task.service';
 import { TaskCreateDto } from '../../../models/task-create.dto';
-import { Task } from '../../../models/task.model';
+import { TaskPriority, Task } from '../../../models/task.model';
+
+// ------------------------------------------------------------
+//  Typed Form interface – alla kontroller får rätt typ
+// ------------------------------------------------------------
+interface TaskForm {
+  title: FormControl<string>;
+  description: FormControl<string>;
+  priority: FormControl<TaskPriority>;
+  deadline: FormControl<Date>;
+}
 
 @Component({
   selector: 'app-add-task',
@@ -52,27 +67,44 @@ export class AddTaskComponent implements OnInit {
   taskId!: string; // sätts i ngOnInit vid edit
   projectId = this.route.snapshot.paramMap.get('projectId')!;
 
-  //---------------------------------------------------------------------------
-  //  Reactive Form – definierar kontroller + validering
-  //-------------------------------------------------------------------------
-  form = this.fb.nonNullable.group({
-    title: ['', Validators.required],
-    description: [''],
-    priority: ['medium', Validators.required],
-    deadline: [new Date(), Validators.required], // default = idag
+  // ------------------------------------------------------------
+  //  Reactive Form – strikt typad
+  // ------------------------------------------------------------
+  form = this.fb.nonNullable.group<TaskForm>({
+    title: this.fb.nonNullable.control('', Validators.required),
+    description: this.fb.nonNullable.control(''),
+    priority: this.fb.nonNullable.control<TaskPriority>(
+      'medium',
+      Validators.required
+    ),
+    deadline: this.fb.nonNullable.control(new Date(), Validators.required),
   });
 
   //---------------------------------------------------------------------------
   //  Lifecycle
   //---------------------------------------------------------------------------
   ngOnInit(): void {
-    this.taskId = this.route.snapshot.paramMap.get('taskId')!;
+    /* Läs ev. taskId (null vid create) */
+    this.taskId = this.route.snapshot.paramMap.get('taskId') || '';
+
+    /* EDIT-läge? → hämta uppgiften och fyll formuläret */
     if (this.taskId) {
-      // → EDIT-läge: hämta uppgiften och patcha formuläret
       this.isEdit = true;
-      this.taskService.getOne(this.taskId).subscribe(
-        (t) => this.form.patchValue({ ...t, deadline: new Date(t.deadline) }) // Date-objekt till datepicker
-      );
+
+      this.taskService.getOne(this.taskId).subscribe((task) => {
+        if (!task) {
+          // Guard – hittades ej
+          console.error('Uppgiften hittades inte');
+          this.router.navigate(['/projects', this.projectId, 'tasks']);
+          return;
+        }
+
+        /* Patcha formuläret – datepicker kräver Date-objekt */
+        this.form.patchValue({
+          ...task,
+          deadline: new Date(task.deadline),
+        });
+      });
     }
   }
 
@@ -80,7 +112,7 @@ export class AddTaskComponent implements OnInit {
   //  UX-hjälp: lägg till x dagar på deadline
   //---------------------------------------------------------------------------
   plusDays(days: number) {
-    const d = new Date(this.form.value.deadline!);
+    const d = new Date(this.form.controls.deadline.value);
     d.setDate(d.getDate() + days);
     this.form.controls.deadline.setValue(d);
   }
@@ -89,31 +121,25 @@ export class AddTaskComponent implements OnInit {
   //  Spara – avgör create vs edit, anropar service och navigerar tillbaka
   //---------------------------------------------------------------------------
   save() {
-    if (this.form.invalid) return; // stoppa om fälten ej klara
+    if (this.form.invalid) return;
 
+    // Gemensamt DTO för både add & edit
     const dto: TaskCreateDto = {
-      ...this.form.getRawValue(), // title, description, etc.
-
-      // projectId: 'p1', // koppla till projektet
-      priority: 'medium',
-      deadline: new Date().toISOString(),
-      projectId: '',
+      ...this.form.getRawValue(), // title, description, priority
+      deadline: this.form.controls.deadline.value.toISOString(),
+      projectId: this.projectId,
     };
 
-    // Välj rätt service-anrop
+    /* Välj rätt anrop beroende på läge */
     const req$ = this.isEdit
       ? this.taskService.update({ id: this.taskId, ...dto } as Task)
       : this.taskService.add(dto);
 
-    // Prenumerera och navigera tillbaka när servern svarat OK
-    req$.subscribe(() =>
+    req$.subscribe(() => {
       this.router.navigate(
-        ['/tasks', this.projectId],
-        { state: { created: !this.isEdit } } // feedback-flagga till listan
-      )
-    );
-
-    // this.taskService.add(dto);
-    // this.router.navigate(['/task']);
+        ['/projects', this.projectId, 'tasks'],
+        { state: { created: !this.isEdit } } // feedback till listan
+      );
+    });
   }
 }

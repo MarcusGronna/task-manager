@@ -18,15 +18,19 @@
 import { inject, Injectable } from '@angular/core'; // DI-verktyg
 import { HttpClient } from '@angular/common/http'; // HTTP-klient :
 import { Observable, tap, EMPTY, catchError, BehaviorSubject, map } from 'rxjs'; // RxJS strömtyp
-import { Task } from '../app/models/task.model'; // mitt interface
-import { TaskCreateDto } from '../app/models/task-create.dto';
+import { Task } from '../app/models/task.model'; // mitt interface/datamodell
+import { TaskCreateDto } from '../app/models/task-create.dto'; // CREATE-DTO
 import { environment } from '../environments/environment'; // miljö-konstant
+
+// localStorage-nyckel (samma som InMemoryDataService)
+const LS_KEY = 'task-manager-db';
 
 @Injectable({ providedIn: 'root' }) // registrerar som global singleton
 export class TaskService {
-  persistOrder(projectId: string, list: Task[]) {
-    throw new Error('Method not implemented.');
-  }
+  // persistOrder(projectId: string, list: Task[]) {
+  //   throw new Error('Method not implemented.');
+  // }
+
   // -------------------------------------------------------------------------
   //  DI + konstanter
   // -------------------------------------------------------------------------
@@ -39,8 +43,8 @@ export class TaskService {
   private _tasks$ = new BehaviorSubject<Task[]>([]); // init tom lista
   tasks$ = this._tasks$.asObservable(); // readonly-ström till komponenter
 
+  // Hämta initial data en gång
   constructor() {
-    // Hämta initial data en gång
     this.refresh();
   }
 
@@ -54,67 +58,51 @@ export class TaskService {
   // -------------------------------------------------------------------------
   //  READ – enskild post
   // -------------------------------------------------------------------------
-  getOne(id: string): Observable<Task> {
+
+  /** Enskild uppgift utifrån id */
+  getOne(id: string): Observable<Task | undefined> {
     return this.tasks$.pipe(map((list) => list.find((t) => t.id === id)!));
   }
 
-  // GET /tasks -> Task-lista
-  // getAll(): Observable<Task[]> {
-  //   return this.http.get<Task[]>(this.base);
-  // }
-  // --- READ : tasks för ett projekt ----------------------------------------
+  /** Alla uppgifter för valt projekt */
   byProject(projectId: string): Observable<Task[]> {
     return this.tasks$.pipe(
       map((list) => list.filter((t) => t.projectId === projectId))
     );
   }
 
-  // --- READ : alla poster (ingen filtrering) -------------------------------
+  /** Alla uppgifter (ingen filtrering) */
   all(): Observable<Task[]> {
-    return this.tasks$; // redan cachat
+    return this.tasks$; // redan cacheat
   }
 
-  // POST /todo -> skickar JSON-body -> lägger till ny todo
-  // add(dto: Omit<Task, 'id' | 'createdAt' | 'done'>): void {
-  //   this.http
-  //     .post<Task>(this.base, dto) // HTTP POST med body = dto
-  //     .pipe(
-  //       tap((newTask) => this._tasks$.next([...this._tasks$.value, newTask])), // pusha in i listan
-  //       catchError((err) => {
-  //         console.error(err);
-  //         return EMPTY;
-  //       })
-  //     )
-  //     .subscribe();
-  // }
-
   // -------------------------------------------------------------------------
-  //  CREATE
+  //  CREATE (POST /tasks)
   // -------------------------------------------------------------------------
   add(dto: TaskCreateDto): Observable<Task> {
     return this.http.post<Task>(this.base, dto).pipe(
-      tap((newTask) => this._tasks$.next([...this._tasks$.value, newTask])),
+      tap((newTask) => {
+        this._tasks$.next([...this._tasks$.value, newTask]);
+        this.saveToLocalStorage();
+      }),
       catchError((err) => {
         console.error(err);
         return EMPTY;
       })
     );
   }
-  // PATCH /task/:id
-  // toggle(id: string, done: boolean): Observable<Task> {
-  //   return this.http.patch<Task>(`${this.base}/${id}`, { done });
-  // }
 
   // -------------------------------------------------------------------------
   //  UPDATE (PUT /tasks/:id)
   // -------------------------------------------------------------------------
   update(task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.base}/${task.id}`, task).pipe(
-      tap((changed) =>
+      tap((changed) => {
         this._tasks$.next(
           this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
-        )
-      ),
+        );
+        this.saveToLocalStorage();
+      }),
       catchError((err) => {
         console.error(err);
         return EMPTY;
@@ -123,35 +111,51 @@ export class TaskService {
   }
 
   // -------------------------------------------------------------------------
-  //  TOGGLE done (PATCH)
+  //  TOGGLE done (PATCH /tasks/:id)
   // -------------------------------------------------------------------------
   toggle(id: string, done: boolean): Observable<Task> {
-    return this.http
-      .patch<Task>(`${this.base}/${id}`, { done })
-      .pipe(
-        tap((changed) =>
-          this._tasks$.next(
-            this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
-          )
-        )
-      );
+    return this.http.patch<Task>(`${this.base}/${id}`, { done }).pipe(
+      tap((changed) => {
+        this._tasks$.next(
+          this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
+        );
+        this.saveToLocalStorage();
+      })
+    );
   }
 
-  // DELETE /tasks/:id
-  // remove(id: string): Observable<void> {
-  //   return this.http.delete<void>(`${this.base}/${id}`);
-  // }
-
   // -------------------------------------------------------------------------
-  //  DELETE
+  //  DELETE (DELETE /tasks/:id)
   // -------------------------------------------------------------------------
   remove(id: string): Observable<void> {
-    return this.http
-      .delete<void>(`${this.base}/${id}`)
-      .pipe(
-        tap(() =>
-          this._tasks$.next(this._tasks$.value.filter((t) => t.id !== id))
-        )
-      );
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      tap(() => {
+        this._tasks$.next(this._tasks$.value.filter((t) => t.id !== id));
+        this.saveToLocalStorage();
+      })
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  //  PERSIST ORDER – skriv ny sortering efter drag-and-drop
+  // -------------------------------------------------------------------------
+  persistOrder(projectId: string, list: Task[]): void {
+    // 1. uppdatera cache direkt
+    this._tasks$.next([
+      ...this._tasks$.value.filter((t) => t.projectId !== projectId),
+      ...list, // redan sorterad lista
+    ]);
+
+    // 2. skriv tillbaka till localStorage
+    this.saveToLocalStorage();
+  }
+
+  // -------------------------------------------------------------------------
+  //  Helper: skriv hela task-arrayen till LS (behåller projects-delen)
+  // -------------------------------------------------------------------------
+  private saveToLocalStorage() {
+    const stored = JSON.parse(localStorage.getItem(LS_KEY) ?? '{}');
+    const merged = { ...stored, tasks: this._tasks$.value };
+    localStorage.setItem(LS_KEY, JSON.stringify(merged));
   }
 }

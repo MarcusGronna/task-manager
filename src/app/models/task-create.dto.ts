@@ -1,9 +1,10 @@
-// data transfer object
+import { TaskPriority } from './task.model';
 
+// data transfer object
 export interface TaskCreateDto {
+  projectId: string;
   title: string;
   description?: string;
-  projectId: string;
-  priority: 'low' | 'medium' | 'high';
-  deadline: string;
+  priority: TaskPriority;
+  deadline: string; // ISO-datum
 }

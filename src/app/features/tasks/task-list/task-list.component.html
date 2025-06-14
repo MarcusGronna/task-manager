@@ -4,27 +4,36 @@ https://material.angular.dev/components/checkbox/overview
 https://angular.dev/api/common/AsyncPipe 
 -->
 
-<button mat-stroked-button (click)="back()">← Tillbaka till projekt</button>
+<button mat-stroked-button (click)="back()">← Till projekt</button>
+
 <h2>Uppgifter</h2>
-@if (showCreated) {
-<p class="info">Uppgift tillagd!</p>
-}
+
+<button mat-raised-button color="accent" [routerLink]="['new']">
+  + Ny uppgift
+</button>
+
 <!-- Material-listcontainer -->
-<mat-list>
+<mat-list
+  cdkDropList
+  *ngIf="tasks$ | async as tasks"
+  (cdkDropListDropped)="sort($event, tasks)"
+>
   <!-- loopar över tasks -->
-  <mat-list-item *ngFor="let task of tasks$ | async">
+  @for (t of tasks; track t.id) {
+  <mat-list-item cdkDrag>
     <!-- binder done och växlar status -->
-    <mat-checkbox [checked]="task.done" (change)="toggle(task)"> </mat-checkbox>
+    <mat-checkbox class="mr-2" [checked]="t.done" (change)="toggle(t)">
+    </mat-checkbox>
 
     <div class="grow">
-      <strong>{{ task.title }}</strong>
-      <br />
-      Deadline: {{ task.deadline }} | Prio: {{ task.priority }}
+      <strong>{{ t.title }}</strong>
+      <small class="muted">
+        — prio {{ t.priority }} — {{ daysLeft(t.deadline) }} dagar kvar
+      </small>
     </div>
 
     <!-- statusetikett -->
-    <span class="status">{{ statusLabel(task) }}</span>
+    <span>{{ t.done ? "✔️ Klar" : "⏳ Pågår" }}</span>
   </mat-list-item>
+  }
 </mat-list>
-
-<app-add-task />
