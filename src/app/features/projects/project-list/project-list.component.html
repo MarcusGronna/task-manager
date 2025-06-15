@@ -7,11 +7,11 @@
   + Nytt projekt
 </button>
 
-<!-- ===== Project list (title + deadline) ====================== -->
+<!-- ------- Project list (title + deadline) ------------- -->
 @if (projects$ | async; as projects) {
 <mat-nav-list class="project-list">
   @for (p of projects; track p.id) {
-  <!-- div + (click) i stället för <a routerLink>  -->
+
   <div class="project-item" mat-list-item (click)="goToTasks(p.id)">
     <!-- Titel -->
     <span class="project-title">{{ p.name }}</span>

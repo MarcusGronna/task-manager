@@ -12,6 +12,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TaskService } from '../../../../services/task.service'; // datatjänst
 import { Task, TaskPriority } from '../../../models/task.model';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -21,12 +24,16 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { switchMap, tap } from 'rxjs/operators';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TaskFilterPipe } from '../../../shared/pipes/task-filter.pipe';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
   imports: [
     NgIf,
+    FormsModule,
+    ReactiveFormsModule,
     AsyncPipe,
     MatListModule,
     MatCheckboxModule,
@@ -34,9 +41,14 @@ import { switchMap, tap } from 'rxjs/operators';
     MatChipsModule,
     MatIconModule,
     MatIconButton,
+    MatFormField,
+    MatButtonToggleModule,
+    MatLabel,
+    MatInputModule,
     DragDropModule,
     RouterLink,
     NgClass,
+    TaskFilterPipe,
   ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
@@ -45,6 +57,10 @@ export class TaskListComponent {
   private taskService = inject(TaskService); // DI: hämta servicen
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+
+  // Search
+  searchCtrl = new FormControl('', { nonNullable: true });
+  selectedStatus: 'all' | 'active' | 'done' = 'all';
 
   projectId!: string;
 

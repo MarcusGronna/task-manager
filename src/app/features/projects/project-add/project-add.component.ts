@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProjectService } from '../../../../services/project.service';
+import { Project } from '../../../models/project.model';
 
 // --- Form-typ -------------------------------------------------------------
 interface ProjectForm {
@@ -33,8 +34,8 @@ interface ProjectForm {
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
-    MatButtonModule,
     MatInputModule,
+    MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
@@ -48,6 +49,7 @@ export class ProjectAddComponent implements OnInit {
   private projectSvc = inject(ProjectService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  project!: Project;
 
   isEdit = false;
   private id!: string;
@@ -66,6 +68,7 @@ export class ProjectAddComponent implements OnInit {
     if (this.id) {
       this.isEdit = true;
       this.projectSvc.getOne(this.id).subscribe((p) => {
+        this.project = p;
         if (!p) return;
         this.form.patchValue({
           ...p,
@@ -94,6 +97,7 @@ export class ProjectAddComponent implements OnInit {
     const dto = {
       ...this.form.getRawValue(),
       deadline: this.form.controls.deadline.value.toISOString(),
+      completed: this.isEdit ? this.project!.completed : false,
     };
 
     const req$ = this.isEdit

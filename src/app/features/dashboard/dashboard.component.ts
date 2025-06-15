@@ -64,11 +64,11 @@ export class DashboardComponent implements OnInit {
         );
 
         return {
-          series: [{ name: 'Tasks', data: counts }],
+          series: [{ name: 'Uppgifter', data: counts }],
           chart: { type: 'bar', height: 350 },
           xaxis: { categories: projects.map((p) => p.name) },
           dataLabels: { enabled: false },
-          title: { text: 'Tasks per project' },
+          title: { text: 'Uppgifter i projekt' },
         } as BarOptions;
       })
     );
@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
         list.forEach((t) => prio[t.priority as keyof typeof prio]++);
         return {
           series: [prio.high, prio.medium, prio.low],
-          labels: ['High', 'Medium', 'Low'],
+          labels: ['Hög', 'Medium', 'Låg'],
           chart: { type: 'donut', height: 350 },
           responsive: [{ breakpoint: 600, options: { chart: { width: 280 } } }],
         } as DonutOptions;

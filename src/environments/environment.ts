@@ -8,5 +8,6 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://trainingdataapi.onrender.com',
+  // apiUrl: 'https://trainingdataapi.onrender.com',
+  apiUrl: '/api',
 };

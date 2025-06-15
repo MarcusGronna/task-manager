@@ -5,4 +5,5 @@ export interface Project {
   description?: string;
   deadline: string;
   createdAt?: string;
+  completed: boolean;
 }
