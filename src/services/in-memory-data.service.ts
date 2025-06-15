@@ -26,29 +26,9 @@ export class InMemoryDataService implements InMemoryDbService {
       return JSON.parse(stored);
     }
 
-    // Default-data första gången
-    const projects: Project[] = [
-      // {
-      //   id: 'p1',
-      //   name: 'Demo-projekt',
-      //   description: 'Visar hur in-memory-db fungerar',
-      //   deadline: '2025-06-15',
-      //   createdAt: new Date().toISOString(),
-      // },
-    ];
+    const projects: Project[] = [];
 
-    const tasks: Task[] = [
-      // {
-      //   id: 't1',
-      //   projectId: 'p1',
-      //   title: 'Första uppgiften',
-      //   description: 'Projektets första uppgift',
-      //   done: false,
-      //   priority: 'medium',
-      //   deadline: '2025-06-15',
-      //   createdAt: new Date(),
-      // },
-    ];
+    const tasks: Task[] = [];
 
     localStorage.setItem(LS_KEY, JSON.stringify({ projects, tasks }));
     return { projects, tasks };
@@ -67,20 +47,27 @@ export class InMemoryDataService implements InMemoryDbService {
 
   // Skriv tillbaka till databasen efter POST/PUT/DELETE
   responseInterceptor(res: ResponseOptions, ri: RequestInfo) {
-    // Endast om  det inte var en GET
+    // 1. Om det var en DELETE på /projects/:id
+    if (ri.method === 'DELETE' && ri.collectionName === 'projects') {
+      const deletedId = ri.id as string;
+
+      // 1a) Plocka fram aktuellt DB-objekt
+      const db = ri.utils.getDb() as any; // { projects:[], tasks:[] }
+
+      // 1b) Filtrera bort alla tasks som hör till projektet
+      db.tasks = db.tasks.filter((t: any) => t.projectId !== deletedId);
+
+      // 1c) Skriv tillbaka till localStorage
+      localStorage.setItem(LS_KEY, JSON.stringify(db));
+    }
+
+    // 2. Standard-sparning för POST, PUT, PATCH, DELETE
     if (ri.method !== 'GET') {
-      // Läs in äldre data om den finns
       const stored = JSON.parse(localStorage.getItem(LS_KEY) ?? '{}');
-      const db = ri.utils.getDb(); // uppdaterad collection
-
-      // Hämta den uppdaterade samlingen från interceptorn
-      const newDbState = ri.utils.getDb();
-
-      // Slå ihop samlingarna, skriv över enskilda collections, men behåll de som inte förändrats
-      const merged = { ...stored, ...db }; // behåll övriga
-
+      const merged = { ...stored, ...ri.utils.getDb() };
       localStorage.setItem(LS_KEY, JSON.stringify(merged));
     }
+
     return res;
   }
 }

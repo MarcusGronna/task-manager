@@ -143,6 +143,14 @@ export class TaskService {
     );
   }
 
+  // Röj alla tasks som hör till ett projekt (anropas av ProjectService)
+  clearByProject(projectId: string) {
+    const remaining = this._tasks$.value.filter(
+      (t) => t.projectId !== projectId
+    );
+    this._tasks$.next(remaining);
+  }
+
   // -------------------------------------------------------------------------
   //  PERSIST ORDER – skriv ny sortering efter drag-and-drop
   // -------------------------------------------------------------------------

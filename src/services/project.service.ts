@@ -3,6 +3,7 @@ import { BehaviorSubject, EMPTY, Observable, tap, catchError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Project } from '../app/models/project.model';
 import { environment } from '../environments/environment';
+import { TaskService } from './task.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { environment } from '../environments/environment';
 export class ProjectService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/projects`;
+  private taskSvc = inject(TaskService);
 
   private _projects$ = new BehaviorSubject<Project[]>([]);
   projects$ = this._projects$.asObservable();
@@ -21,19 +23,6 @@ export class ProjectService {
       .pipe(tap((data) => this._projects$.next(data)));
   }
 
-  // POST /projects
-  // add(data: Omit<Project, 'id' | 'createdAt'>) {
-  //   return this.http
-  //     .post<Project>(this.base, data)
-  //     .pipe(
-  //       tap((p) => this._projects$.next([...this._projects$.value, p])),
-  //       catchError((err) => {
-  //         console.error(err);
-  //         return EMPTY;
-  //       })
-  //     )
-  //     .subscribe();
-  // }
   add(dto: Omit<Project, 'id' | 'createdAt'>) {
     return this.http
       .post<Project>(this.base, dto)
@@ -47,6 +36,14 @@ export class ProjectService {
 
   // DELETE /projects/:id
   remove(id: string) {
-    return this.http.delete<void>(`${this.base}/${id}`);
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      tap(() => {
+        // 1. uppdatera project-listan i minnescachen (fanns redan)
+        this._projects$.next(this._projects$.value.filter((p) => p.id !== id));
+
+        // 2. röj tasks ur TaskService-cachen
+        this.taskSvc.clearByProject(id);
+      })
+    );
   }
 }
