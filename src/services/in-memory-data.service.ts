@@ -49,16 +49,17 @@ export class InMemoryDataService implements InMemoryDbService {
   responseInterceptor(res: ResponseOptions, ri: RequestInfo) {
     // 1. Om det var en DELETE på /projects/:id
     if (ri.method === 'DELETE' && ri.collectionName === 'projects') {
-      const deletedId = ri.id as string;
+      const deletedId = Number(ri.id);
 
       // 1a) Plocka fram aktuellt DB-objekt
       const db = ri.utils.getDb() as any; // { projects:[], tasks:[] }
 
       // 1b) Filtrera bort alla tasks som hör till projektet
-      db.tasks = db.tasks.filter((t: any) => t.projectId !== deletedId);
+      db.tasks = (db.tasks ?? []).filter((t: any) => t.projectId !== deletedId);
 
       // 1c) Skriv tillbaka till localStorage
       localStorage.setItem(LS_KEY, JSON.stringify(db));
+      return res;
     }
 
     // 2. Standard-sparning för POST, PUT, PATCH, DELETE

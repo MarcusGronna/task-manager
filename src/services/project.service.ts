@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, tap, catchError } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, tap, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Project } from '../app/models/project.model';
 import { environment } from '../environments/environment';
@@ -23,6 +23,12 @@ export class ProjectService {
       .pipe(tap((data) => this._projects$.next(data)));
   }
 
+  getOne(id: string) {
+    return this.projects$.pipe(
+      map((list: Project[]) => list.find((p) => p.id === id)!)
+    );
+  }
+
   add(dto: Omit<Project, 'id' | 'createdAt'>) {
     return this.http
       .post<Project>(this.base, dto)
@@ -31,7 +37,17 @@ export class ProjectService {
 
   // PUT /projects/:id
   update(p: Project) {
-    return this.http.put<Project>(`${this.base}/${p.id}`, p);
+    return this.http
+      .put<Project>(`${this.base}/${p.id}`, p)
+      .pipe(
+        tap((changed) =>
+          this._projects$.next(
+            this._projects$.value.map((x) =>
+              x.id === changed.id ? changed : x
+            )
+          )
+        )
+      );
   }
 
   // DELETE /projects/:id

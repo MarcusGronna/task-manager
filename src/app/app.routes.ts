@@ -30,13 +30,15 @@ export const routes: Routes = [
     children: [
       { path: '', component: ProjectListComponent }, // lista
       { path: 'new', component: ProjectAddComponent }, // nytt projekt
+      { path: ':id/edit', component: ProjectAddComponent }, //  EDIT
 
-      // ── Uppgifter i valt projekt ─────────────────────────────
+      // --- Uppgifter i valt projekt ------------------------------
       {
         path: ':projectId/tasks',
         children: [
           { path: '', component: TaskListComponent }, // lista
           { path: 'new', component: AddTaskComponent }, // ny uppgift
+          { path: ':taskId/edit', component: AddTaskComponent }, //  EDIT
         ],
       },
     ],

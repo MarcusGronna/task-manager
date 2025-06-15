@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -6,7 +6,7 @@ import {
   FormControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -43,17 +43,39 @@ interface ProjectForm {
   templateUrl: './project-add.component.html',
   styleUrl: './project-add.component.scss',
 })
-export class ProjectAddComponent {
+export class ProjectAddComponent implements OnInit {
   private fb = inject(FormBuilder);
   private projectSvc = inject(ProjectService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  /** Typed reactive form med *förvalt datum = idag* */
+  isEdit = false;
+  private id!: string;
+
+  // Typed reactive form med *förvalt datum = idag
   form = this.fb.nonNullable.group<ProjectForm>({
     name: this.fb.nonNullable.control('', Validators.required),
     description: this.fb.nonNullable.control(''),
     deadline: this.fb.nonNullable.control(new Date(), Validators.required),
   });
+
+  //  hämta parametern & patcha om vi redigerar
+  ngOnInit(): void {
+    this.id = this.route.snapshot.paramMap.get('id') ?? '';
+
+    if (this.id) {
+      this.isEdit = true;
+
+      this.projectSvc.getOne(this.id).subscribe((p) => {
+        if (!p) return;
+
+        this.form.patchValue({
+          ...p,
+          deadline: new Date(p.deadline),
+        });
+      });
+    }
+  }
 
   /* -------------------------------------------------------------- */
   /* Hjälpknapp ± x dagar                                           */
@@ -72,13 +94,14 @@ export class ProjectAddComponent {
     if (this.form.invalid) return;
 
     const dto = {
-      ...this.form.getRawValue(), // name, description
+      ...this.form.getRawValue(),
       deadline: this.form.controls.deadline.value.toISOString(),
     };
 
-    this.projectSvc.add(dto).subscribe({
-      next: () => this.router.navigate(['/projects']),
-      error: (err) => console.error('POST misslyckades', err),
-    });
+    const req$ = this.isEdit
+      ? this.projectSvc.update({ id: this.id, ...dto })
+      : this.projectSvc.add(dto);
+
+    req$.subscribe(() => this.router.navigate(['/projects']));
   }
 }
