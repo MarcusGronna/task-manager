@@ -26,13 +26,26 @@ export class InMemoryDataService implements InMemoryDbService {
   createDb() {
     const stored = localStorage.getItem(LS_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const db = JSON.parse(stored) as { projects: Project[]; tasks: Task[] };
+
+      // --- Sätt räknarna till max + 1 ------------------------------------
+      const maxProject = db.projects
+        .map((p) => Number((p.id ?? '').replace(/^p/, '')))
+        .reduce((a, b) => Math.max(a, b), 0);
+
+      const maxTask = db.tasks
+        .map((t) => Number((t.id ?? '').replace(/^t/, '')))
+        .reduce((a, b) => Math.max(a, b), 0);
+
+      projectCounter = maxProject + 1;
+      taskCounter = maxTask + 1;
+
+      return db;
     }
 
+    // Första gången – starta tom databas
     const projects: Project[] = [];
-
     const tasks: Task[] = [];
-
     localStorage.setItem(LS_KEY, JSON.stringify({ projects, tasks }));
     return { projects, tasks };
   }
