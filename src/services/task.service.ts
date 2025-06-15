@@ -27,10 +27,6 @@ const LS_KEY = 'task-manager-db';
 
 @Injectable({ providedIn: 'root' }) // registrerar som global singleton
 export class TaskService {
-  // persistOrder(projectId: string, list: Task[]) {
-  //   throw new Error('Method not implemented.');
-  // }
-
   // -------------------------------------------------------------------------
   //  DI + konstanter
   // -------------------------------------------------------------------------
@@ -118,16 +114,14 @@ export class TaskService {
     const updated: Task = { ...original, done };
 
     /* 3. PUT – vissa back-end (in-memory) svarar med null ⇒ fall-back till vår kopia */
-    return this.http.patch<Task>(`${this.base}/${id}`, { done }).pipe(
-      map(
-        (res) =>
-          res ?? { ...this._tasks$.value.find((t) => t.id === id)!, done }
-      ),
-      tap((changed) =>
+    return this.http.put<Task>(`${this.base}/${id}`, updated).pipe(
+      map((res) => res ?? updated), // vissa versioner returnerar null
+      tap((changed) => {
         this._tasks$.next(
           this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
-        )
-      )
+        );
+        this.saveToLocalStorage(); // LS synk
+      })
     );
   }
   // -------------------------------------------------------------------------
@@ -144,10 +138,10 @@ export class TaskService {
 
   // Röj alla tasks som hör till ett projekt (anropas av ProjectService)
   clearByProject(projectId: string) {
-    const remaining = this._tasks$.value.filter(
-      (t) => t.projectId !== projectId
+    this._tasks$.next(
+      this._tasks$.value.filter((t) => t.projectId !== projectId)
     );
-    this._tasks$.next(remaining);
+    this.saveToLocalStorage();
   }
 
   // -------------------------------------------------------------------------

@@ -62,8 +62,8 @@ export class TaskListComponent {
   );
 
   // checkbox-klick
-  toggle(task: Task) {
-    this.taskService.toggle(task.id, !task.done).subscribe(); // PATCH till backend och trigga HTTP-anrop
+  toggle(id: string, checked: boolean) {
+    this.taskService.toggle(id, checked).subscribe(); // PATCH till backend och trigga HTTP-anrop
   }
 
   // Drag-sortering

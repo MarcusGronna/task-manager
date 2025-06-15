@@ -27,8 +27,13 @@ import { ProjectService } from '../../../../services/project.service';
 })
 export class ProjectListComponent {
   private projectService = inject(ProjectService);
-  projects$ = this.projectService.getAll();
+  projects$ = this.projectService.projects$;
   private router = inject(Router); // lägg till detta
+
+  constructor() {
+    // trigga initial laddning en gång
+    this.projectService.getAll().subscribe();
+  }
 
   goToTasks(id: string) {
     this.router.navigate(['/projects', id, 'tasks']);

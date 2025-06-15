@@ -52,7 +52,7 @@ export class ProjectAddComponent implements OnInit {
   isEdit = false;
   private id!: string;
 
-  // Typed reactive form med *förvalt datum = idag
+  // Typed reactive form med förvalt datum = idag
   form = this.fb.nonNullable.group<ProjectForm>({
     name: this.fb.nonNullable.control('', Validators.required),
     description: this.fb.nonNullable.control(''),

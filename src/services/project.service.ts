@@ -18,9 +18,10 @@ export class ProjectService {
 
   // GET /projects
   getAll(): Observable<Project[]> {
-    return this.http
-      .get<Project[]>(this.base)
-      .pipe(tap((data) => this._projects$.next(data)));
+    this.http
+      .get<Project[]>(this.base) // hämta en gång
+      .subscribe((list) => this._projects$.next(list)); // fyll cachen
+    return this.projects$; // levande ström
   }
 
   getOne(id: string) {

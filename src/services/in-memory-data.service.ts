@@ -17,6 +17,9 @@ import { Task } from '../app/models/task.model';
 // Konstant nyckel för att spara/läsa 'databasen' i localStorage
 const LS_KEY = 'task-manager-db';
 
+let taskCounter = 1;
+let projectCounter = 1;
+
 @Injectable({ providedIn: 'root' })
 export class InMemoryDataService implements InMemoryDbService {
   // Grunddata
@@ -35,14 +38,10 @@ export class InMemoryDataService implements InMemoryDbService {
   }
 
   // En enkel id-generator (om man POST:ar utan _id)
-  genId<T extends { id?: string }>(collection: T[]): string {
-    const nums = collection
-      .map((c) => c.id as string | undefined)
-      .filter(Boolean)
-      .map((s) => +s!.toString().replace(/\D/g, ''));
-
-    const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
-    return 'p' + next;
+  genId<T>(collection: string, _collectionName: string): string {
+    if (_collectionName === 'projects') return `p${projectCounter++}`;
+    if (_collectionName === 'tasks') return `t${taskCounter++}`;
+    return crypto.randomUUID(); // fallback
   }
 
   /* ===================================================================

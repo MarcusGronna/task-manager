@@ -33,7 +33,7 @@ https://angular.dev/api/common/AsyncPipe
       color="primary"
       class="check"
       [checked]="t.done"
-      (change)="toggle(t)"
+      (change)="toggle(t.id, $event.checked)"
       aria-label="Klar?"
     ></mat-checkbox>
 
