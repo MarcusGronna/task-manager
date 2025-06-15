@@ -100,10 +100,9 @@ export class ProjectAddComponent implements OnInit {
       completed: this.isEdit ? this.project!.completed : false,
     };
 
-    const req$ = this.isEdit
+    (this.isEdit
       ? this.projectSvc.update({ id: this.id, ...dto })
-      : this.projectSvc.add(dto);
-
-    req$.subscribe(() => this.router.navigate(['/projects']));
+      : this.projectSvc.add(dto)
+    ).subscribe(() => this.router.navigate(['/projects']));
   }
 }

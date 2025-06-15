@@ -37,7 +37,7 @@ export class ProjectListComponent {
   projects$ = this.projectService.projects$;
   private router = inject(Router); // lägg till detta
 
-  constructor() {
+  constructor(public projectSvc: ProjectService) {
     // trigga initial laddning en gång
     this.projectService.getAll().subscribe();
   }

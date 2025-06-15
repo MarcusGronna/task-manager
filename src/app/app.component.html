@@ -1,14 +1,15 @@
-<h1>Angular Task-Manager</h1>
-<mat-toolbar color="primary">
-  <span class="title">Angular Task-Manager</span>
-  <span class="spacer"></span>
+<div class="page-container">
+  <h1>Angular Task-Manager</h1>
+  <mat-toolbar color="primary">
+    <span class="title">Angular Task-Manager</span>
+    <span class="spacer"></span>
 
-  <a mat-button routerLink="/dashboard" routerLinkActive="active-link"
-    >Dashboard</a
-  >
-  <a mat-button routerLink="/projects" routerLinkActive="active-link"
-    >Projects</a
-  >
-</mat-toolbar>
-
-<router-outlet />
+    <a mat-button routerLink="/dashboard" routerLinkActive="active-link"
+      >Dashboard</a
+    >
+    <a mat-button routerLink="/projects" routerLinkActive="active-link"
+      >Projects</a
+    >
+  </mat-toolbar>
+  <router-outlet />
+</div>
