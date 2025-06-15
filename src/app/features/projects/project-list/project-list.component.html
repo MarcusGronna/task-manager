@@ -1,3 +1,28 @@
+<section class="project-toolbar">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Sök projekt</mat-label>
+    <input matInput [formControl]="searchCtrl" placeholder="Namn…" />
+    <button
+      *ngIf="searchCtrl.value"
+      matSuffix
+      mat-icon-button
+      (click)="searchCtrl.setValue('')"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-button-toggle-group
+    appearance="legacy"
+    [(ngModel)]="selectedStatus"
+    aria-label="Filter status"
+  >
+    <mat-button-toggle value="all">Alla</mat-button-toggle>
+    <mat-button-toggle value="active">Pågående</mat-button-toggle>
+    <mat-button-toggle value="done">Klart</mat-button-toggle>
+  </mat-button-toggle-group>
+</section>
+
 <button
   mat-raised-button
   color="accent"
@@ -7,11 +32,11 @@
   + Nytt projekt
 </button>
 
-<!-- ===== Project list (title + deadline) ====================== -->
+<!-- ------- Project list (title + deadline) ------------- -->
 @if (projects$ | async; as projects) {
 <mat-nav-list class="project-list">
   @for (p of projects; track p.id) {
-  <!-- div + (click) i stället för <a routerLink>  -->
+
   <div class="project-item" mat-list-item (click)="goToTasks(p.id)">
     <!-- Titel -->
     <span class="project-title">{{ p.name }}</span>

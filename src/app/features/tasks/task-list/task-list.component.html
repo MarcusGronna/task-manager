@@ -8,6 +8,31 @@ https://angular.dev/api/common/AsyncPipe
 
 <h2>Uppgifter</h2>
 
+<section class="task-toolbar">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Sök uppgift</mat-label>
+    <input matInput [formControl]="searchCtrl" placeholder="Titel…" />
+    <button
+      *ngIf="searchCtrl.value"
+      matSuffix
+      mat-icon-button
+      (click)="searchCtrl.setValue('')"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-button-toggle-group
+    appearance="legacy"
+    [(ngModel)]="selectedStatus"
+    aria-label="Filter status"
+  >
+    <mat-button-toggle value="all">Alla</mat-button-toggle>
+    <mat-button-toggle value="active">Aktiva</mat-button-toggle>
+    <mat-button-toggle value="done">Klart</mat-button-toggle>
+  </mat-button-toggle-group>
+</section>
+
 <!-- navigerar till /tasks/:projectId/new -->
 <button mat-raised-button color="accent" class="add-btn" [routerLink]="['new']">
   + Ny uppgift
@@ -17,10 +42,12 @@ https://angular.dev/api/common/AsyncPipe
 <mat-nav-list
   class="task-list"
   cdkDropList
-  *ngIf="tasks$ | async as tasks"
-  (cdkDropListDropped)="sort($event, tasks)"
+  *ngIf="tasks$ | async as allTasks"
+  (cdkDropListDropped)="sort($event, allTasks)"
 >
-  @for (t of tasks; track t.id) {
+  <!-- Visa BARA filtrerade uppgifter, men spara full lista för sort() -->
+  @for ( t of (allTasks | taskFilter:searchCtrl.value:selectedStatus); track
+  t.id ) {
   <!-- div istället för <a> -> inga fel med <mat-checkbox>  -->
   <div
     mat-list-item
@@ -57,7 +84,7 @@ https://angular.dev/api/common/AsyncPipe
       {{ statusLabel(t) }}
     </mat-chip>
 
-    <!-- Edit -->
+    <!-- Edit-knapp -->
     <button
       mat-icon-button
       color="primary"
@@ -68,11 +95,10 @@ https://angular.dev/api/common/AsyncPipe
       <mat-icon>edit</mat-icon>
     </button>
 
-    <!-- Ta bort-knapp (valfri) ------------------------------------ -->
+    <!-- Delete-knapp --------------------------------------------- -->
     <button
       mat-icon-button
       color="warn"
-      class="delete-btn"
       aria-label="Ta bort"
       (click)="remove(t.id)"
     >
