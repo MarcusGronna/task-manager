@@ -5,12 +5,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ProjectFilterPipe } from '../../../shared/pipes/project-filter.pipe';
 
 import { ProjectService } from '../../../../services/project.service';
 
@@ -27,10 +25,7 @@ import { ProjectService } from '../../../../services/project.service';
     MatButtonModule,
     RouterLink,
     MatIconModule,
-    MatFormField,
-    MatLabel,
     MatButtonToggleModule,
-    ProjectFilterPipe,
   ],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',
