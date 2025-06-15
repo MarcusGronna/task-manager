@@ -1,5 +1,5 @@
 <mat-card class="form-card">
-  <h2>Nytt projekt</h2>
+  <h2>{{ isEdit ? "Uppdatera projekt" : "Nytt projekt" }}</h2>
 
   <form [formGroup]="form" (ngSubmit)="save()">
     <!-- Namn ------------------------------------------------------- -->
@@ -80,7 +80,7 @@
       type="submit"
       [disabled]="form.invalid"
     >
-      Spara projekt
+      {{ isEdit ? "Spara ändringar" : "Spara projekt" }}
     </button>
   </form>
 </mat-card>

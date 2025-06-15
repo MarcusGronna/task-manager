@@ -24,6 +24,17 @@
 
     <span class="spacer"></span>
 
+    <!-- Edit -->
+    <button
+      mat-icon-button
+      color="primary"
+      [routerLink]="['/projects', p.id, 'edit']"
+      (click)="$event.stopPropagation()"
+      matTooltip="Redigera projekt"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+
     <!-- Papperskorg – hindra klicket från att trigga navigation -->
     <button
       mat-icon-button

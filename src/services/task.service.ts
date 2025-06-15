@@ -97,23 +97,19 @@ export class TaskService {
   // -------------------------------------------------------------------------
   update(task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.base}/${task.id}`, task).pipe(
-      tap((changed) => {
+      map((res) => res ?? task),
+      tap((changed) =>
         this._tasks$.next(
           this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
-        );
-        this.saveToLocalStorage();
-      }),
-      catchError((err) => {
-        console.error(err);
-        return EMPTY;
-      })
+        )
+      )
     );
   }
 
   // -------------------------------------------------------------------------
   //  TOGGLE done (PATCH /tasks/:id)
   // -------------------------------------------------------------------------
-  toggle(id: string | number, done: boolean) {
+  toggle(id: string, done: boolean): Observable<Task> {
     /* 1. Hämta originalet ur cachen */
     const original = this._tasks$.value.find((t) => t.id === id);
     if (!original) return EMPTY; // nothing to update → avsluta tyst
@@ -122,13 +118,16 @@ export class TaskService {
     const updated: Task = { ...original, done };
 
     /* 3. PUT – vissa back-end (in-memory) svarar med null ⇒ fall-back till vår kopia */
-    return this.http.put<Task | null>(`${this.base}/${id}`, updated).pipe(
-      tap((response) => {
-        const task = response ?? updated; // om null ⇒ använd vår lokala kopia
+    return this.http.patch<Task>(`${this.base}/${id}`, { done }).pipe(
+      map(
+        (res) =>
+          res ?? { ...this._tasks$.value.find((t) => t.id === id)!, done }
+      ),
+      tap((changed) =>
         this._tasks$.next(
-          this._tasks$.value.map((t) => (t.id === task.id ? task : t))
-        );
-      })
+          this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
+        )
+      )
     );
   }
   // -------------------------------------------------------------------------

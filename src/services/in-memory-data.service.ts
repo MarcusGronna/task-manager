@@ -45,23 +45,26 @@ export class InMemoryDataService implements InMemoryDbService {
     return 'p' + next;
   }
 
+  /* ===================================================================
+       Interceptor: körs efter varje request innan svaret skickas ut
+     ================================================================= */
   // Skriv tillbaka till databasen efter POST/PUT/DELETE
   responseInterceptor(res: ResponseOptions, ri: RequestInfo) {
     // 1. Om det var en DELETE på /projects/:id
     if (ri.method === 'DELETE' && ri.collectionName === 'projects') {
-      const deletedId = Number(ri.id);
+      const deletedId = ri.id as string;
 
       // 1a) Plocka fram aktuellt DB-objekt
-      const db = ri.utils.getDb() as any; // { projects:[], tasks:[] }
+      const db = ri.utils.getDb() as any;
 
       // 1b) Filtrera bort alla tasks som hör till projektet
-      db.tasks = (db.tasks ?? []).filter((t: any) => t.projectId !== deletedId);
+      if (Array.isArray(db.tasks)) {
+        db.tasks = db.tasks.filter((t: any) => t.projectId !== deletedId);
+      }
 
       // 1c) Skriv tillbaka till localStorage
-      localStorage.setItem(LS_KEY, JSON.stringify(db));
-      return res;
+      localStorage.setItem('task-manager-db', JSON.stringify(db));
     }
-
     // 2. Standard-sparning för POST, PUT, PATCH, DELETE
     if (ri.method !== 'GET') {
       const stored = JSON.parse(localStorage.getItem(LS_KEY) ?? '{}');

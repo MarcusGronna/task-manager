@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../../services/project.service';
-import { Project } from '../../../models/project.model';
 
 @Component({
   selector: 'app-project-list',

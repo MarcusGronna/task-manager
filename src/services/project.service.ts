@@ -40,10 +40,10 @@ export class ProjectService {
     return this.http
       .put<Project>(`${this.base}/${p.id}`, p)
       .pipe(
-        tap((changed) =>
+        tap(() =>
           this._projects$.next(
             this._projects$.value.map((x) =>
-              x.id === changed.id ? changed : x
+              x.id === p.id ? { ...x, ...p } : x
             )
           )
         )

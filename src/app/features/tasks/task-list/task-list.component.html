@@ -57,6 +57,17 @@ https://angular.dev/api/common/AsyncPipe
       {{ statusLabel(t) }}
     </mat-chip>
 
+    <!-- Edit -->
+    <button
+      mat-icon-button
+      color="primary"
+      [routerLink]="['/projects', projectId, 'tasks', t.id, 'edit']"
+      (click)="$event.stopPropagation()"
+      matTooltip="Redigera uppgift"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+
     <!-- Ta bort-knapp (valfri) ------------------------------------ -->
     <button
       mat-icon-button

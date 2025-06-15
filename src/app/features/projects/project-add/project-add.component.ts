@@ -59,16 +59,14 @@ export class ProjectAddComponent implements OnInit {
     deadline: this.fb.nonNullable.control(new Date(), Validators.required),
   });
 
-  //  hämta parametern & patcha om vi redigerar
+  //  hämta & patcha om vi redigerar
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id') ?? '';
 
     if (this.id) {
       this.isEdit = true;
-
       this.projectSvc.getOne(this.id).subscribe((p) => {
         if (!p) return;
-
         this.form.patchValue({
           ...p,
           deadline: new Date(p.deadline),
