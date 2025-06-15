@@ -1,17 +1,40 @@
-<h2>Projekt</h2>
-
-<button mat-raised-button color="accent" routerLink="/projects/new">
+<button
+  mat-raised-button
+  color="accent"
+  routerLink="/projects/new"
+  class="new-project-btn"
+>
   + Nytt projekt
 </button>
 
-@if (projects$ |async; as projects) {
-<mat-nav-list>
+<!-- ===== Project list (title + deadline) ====================== -->
+@if (projects$ | async; as projects) {
+<mat-nav-list class="project-list">
   @for (p of projects; track p.id) {
-  <a mat-list-item [routerLink]="[p.id, 'tasks']">
-    {{ p.name }} — {{ p.deadline | date : "yyyy-MM-dd" }}
+  <!-- div + (click) i stället för <a routerLink>  -->
+  <div class="project-item" mat-list-item (click)="goToTasks(p.id)">
+    <!-- Titel -->
+    <span class="project-title">{{ p.name }}</span>
+
+    <!-- En-dash + datum -->
+    &nbsp;—&nbsp;
+    <time class="project-date">
+      Deadline&nbsp;:&nbsp;{{ p.deadline | date : "yyyy-MM-dd" }}
+    </time>
+
     <span class="spacer"></span>
-    <mat-chip color="primary" selected>{{ p.taskCount }} tasks</mat-chip>
-  </a>
+
+    <!-- Papperskorg – hindra klicket från att trigga navigation -->
+    <button
+      mat-icon-button
+      color="warn"
+      class="delete-btn"
+      aria-label="Ta bort projekt"
+      (click)="remove(p.id); $event.stopPropagation()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
   }
 </mat-nav-list>
 } @else {

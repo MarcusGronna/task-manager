@@ -41,23 +41,61 @@ https://material.angular.dev/components/card/overview
       </mat-select>
     </mat-form-field>
 
-    <!-- Deadline + snabbknappar -->
-    <mat-form-field appearance="outline" class="full">
-      <mat-label>Deadline</mat-label>
-      <input
-        matInput
-        [matDatepicker]="dp"
-        formControlName="deadline"
-        required
-      />
-      <mat-datepicker #dp></mat-datepicker>
-      <button mat-button matSuffix type="button" (click)="plusDays(1)">
-        +1 dag
-      </button>
-      <button mat-button matSuffix type="button" (click)="plusDays(7)">
-        +7 dagar
-      </button>
-    </mat-form-field>
+    <!-- Deadline + steppknappar ----------------------------------- -->
+    <div class="deadline-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Deadline *</mat-label>
+        <input
+          matInput
+          [matDatepicker]="dp"
+          formControlName="deadline"
+          required
+        />
+        <mat-datepicker #dp></mat-datepicker>
+      </mat-form-field>
+
+      <div class="btn-group">
+        <!-- –7 dagar -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(-7)"
+          matTooltip="–7 dagar"
+        >
+          <mat-icon>keyboard_double_arrow_left</mat-icon>
+        </button>
+
+        <!-- –1 dag -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(-1)"
+          matTooltip="–1 dag"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <!-- +1 dag -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(1)"
+          matTooltip="+1 dag"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <!-- +7 dagar -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(7)"
+          matTooltip="+7 dagar"
+        >
+          <mat-icon>keyboard_double_arrow_right</mat-icon>
+        </button>
+      </div>
+    </div>
 
     <!-- Spara-knappen ----------------------- -->
     <button

@@ -1,36 +1,79 @@
-<p>project-add works!</p>
-
-<mat-card>
+<mat-card class="form-card">
   <h2>Nytt projekt</h2>
 
   <form [formGroup]="form" (ngSubmit)="save()">
+    <!-- Namn ------------------------------------------------------- -->
     <mat-form-field appearance="outline" class="full">
-      <mat-label> Namn </mat-label>
+      <mat-label>Namn *</mat-label>
       <input matInput formControlName="name" required />
-      @if (form.controls.name.hasError('required')) {
-      <mat-error>Namn krävs</mat-error>
-      }
+      <mat-error *ngIf="form.controls.name.hasError('required')">
+        Namn krävs
+      </mat-error>
     </mat-form-field>
 
+    <!-- Beskrivning ------------------------------------------------ -->
     <mat-form-field appearance="outline" class="full">
       <mat-label>Beskrivning</mat-label>
       <textarea matInput rows="3" formControlName="description"></textarea>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full">
-      <mat-label>Deadline</mat-label>
-      <input
-        matInput
-        [matDatepicker]="dp"
-        formControlName="deadline"
-        required
-      />
-      <mat-datepicker #dp></mat-datepicker>
-      @if (form.controls.deadline.hasError('required')) {
-      <mat-error>Deadline krävs</mat-error>
-      }
-    </mat-form-field>
+    <!-- Deadline + steppknappar ----------------------------------- -->
+    <div class="deadline-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Deadline *</mat-label>
+        <input
+          matInput
+          [matDatepicker]="dp"
+          formControlName="deadline"
+          required
+        />
+        <mat-datepicker #dp></mat-datepicker>
+      </mat-form-field>
 
+      <div class="btn-group">
+        <!-- –7 dagar -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(-7)"
+          matTooltip="–7 dagar"
+        >
+          <mat-icon>keyboard_double_arrow_left</mat-icon>
+        </button>
+
+        <!-- –1 dag -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(-1)"
+          matTooltip="–1 dag"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <!-- +1 dag -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(1)"
+          matTooltip="+1 dag"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <!-- +7 dagar -->
+        <button
+          mat-icon-button
+          type="button"
+          (click)="shiftDeadline(7)"
+          matTooltip="+7 dagar"
+        >
+          <mat-icon>keyboard_double_arrow_right</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Spara ------------------------------------------------------ -->
     <button
       mat-raised-button
       color="primary"

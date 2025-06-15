@@ -7,3 +7,11 @@ mat-card {
     margin: 24px auto;
     padding: 16px 24px;
 }
+
+.deadline-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  .btn-group { display: flex; }
+}

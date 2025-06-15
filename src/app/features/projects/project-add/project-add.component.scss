@@ -1,0 +1,64 @@
+/* ------------------------------------------------------------------
+   Kortlayout
+   -----------------------------------------------------------------*/
+.form-card {
+  max-width: 500px;
+    margin: 24px auto;
+    padding: 16px 24px;    
+  display: block;            
+}
+
+/* ------------------------------------------------------------------
+   Grundlayout
+   -----------------------------------------------------------------*/
+
+form {
+  display: grid;
+  gap: 1.25rem;                 /* luft mellan form-fält   */
+  max-width: 52rem;             /* behållare                */
+}
+
+/* full-bredd på _alla_ mat-form-fields */
+.full,
+mat-form-field.full {
+  flex: 1 1 100%;
+}
+
+/* ------------------------------------------------------------------
+   Deadline-rad
+   -----------------------------------------------------------------*/
+
+.deadline-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  /* gör datepicker-fältet lite smalare än textfälten */
+  mat-form-field {
+    min-width: 11rem;
+    flex: 0 0 11rem;
+  }
+
+  /* gruppen med ±-knappar */
+  .btn-group {
+    display: flex;
+    gap: .25rem;
+
+    /* gör ikonerna en aning ”soft-primary” */
+    button[mat-icon-button] {
+      color: var(--color-primary);
+      transition: background .15s ease;
+
+      &:hover { background: rgba(0,0,0,.06); }
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Spara-knappen
+   -----------------------------------------------------------------*/
+
+button[type="submit"] {
+  align-self: start;            /* lägg knappen under fälten */
+  width: fit-content;           /* bara så bred som innehåll */
+}

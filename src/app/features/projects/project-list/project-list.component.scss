@@ -1,0 +1,40 @@
+/* -------- typografi -------- */
+.project-title { font-weight: 600; }
+
+.project-date  {               /* tunn, tabell-jämna siffror   */
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+/* -------- list-layout ------ */
+.project-list {                /* lite luft inåt sidorna       */
+  padding-inline: 1rem;
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;                 /* mellan titel & datum         */
+  padding-block: .5rem;        /* rad-höjd                     */
+cursor: pointer;
+
+  &:hover { background: rgba(0,0,0,.04); }   /* diskret hover */
+
+  /* chipen trycks längst till höger av spacern i html-en  */
+}
+
+.spacer { flex: 1 1 auto; }
+
+/* Knappen högst upp i listan */
+.new-project-btn {
+  margin: 1rem 0 1.5rem;   /* top / sides / bottom */
+}
+
+.delete-btn {
+  margin-left: .25rem;
+
+  /* tonad till grå tills användaren hovrar */
+  color: var(--color-muted);
+
+  &:hover { color: var(--color-text); }
+}

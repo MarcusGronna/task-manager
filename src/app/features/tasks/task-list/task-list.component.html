@@ -8,32 +8,65 @@ https://angular.dev/api/common/AsyncPipe
 
 <h2>Uppgifter</h2>
 
-<button mat-raised-button color="accent" [routerLink]="['new']">
+<!-- navigerar till /tasks/:projectId/new -->
+<button mat-raised-button color="accent" class="add-btn" [routerLink]="['new']">
   + Ny uppgift
 </button>
 
-<!-- Material-listcontainer -->
-<mat-list
+<!-- Material-listcontainer --------------------------------------------- -->
+<mat-nav-list
+  class="task-list"
   cdkDropList
   *ngIf="tasks$ | async as tasks"
   (cdkDropListDropped)="sort($event, tasks)"
 >
-  <!-- loopar över tasks -->
   @for (t of tasks; track t.id) {
-  <mat-list-item cdkDrag>
-    <!-- binder done och växlar status -->
-    <mat-checkbox class="mr-2" [checked]="t.done" (change)="toggle(t)">
-    </mat-checkbox>
+  <!-- div istället för <a> -> inga fel med <mat-checkbox>  -->
+  <div
+    mat-list-item
+    class="task-item"
+    cdkDrag
+    [ngClass]="{ 'task-item-done': t.done }"
+  >
+    <!-- Checkruta ------------------------------------------------- -->
+    <mat-checkbox
+      color="primary"
+      class="check"
+      [checked]="t.done"
+      (change)="toggle(t)"
+      aria-label="Klar?"
+    ></mat-checkbox>
 
-    <div class="grow">
+    <!-- Titel + meta --------------------------------------------- -->
+    <div class="meta">
       <strong>{{ t.title }}</strong>
-      <small class="muted">
-        — prio {{ t.priority }} — {{ daysLeft(t.deadline) }} dagar kvar
+      <small>
+        — Prioritet {{ priorityLabel(t.priority) }} —
+        {{ daysLeft(t.deadline) }} dagar kvar
       </small>
     </div>
 
-    <!-- statusetikett -->
-    <span>{{ t.done ? "✔️ Klar" : "⏳ Pågår" }}</span>
-  </mat-list-item>
+    <span class="spacer"></span>
+
+    <!-- Status-chip ---------------------------------------------- -->
+    <mat-chip
+      [color]="t.done ? 'primary' : undefined"
+      variant="outlined"
+      selected
+    >
+      {{ statusLabel(t) }}
+    </mat-chip>
+
+    <!-- Ta bort-knapp (valfri) ------------------------------------ -->
+    <button
+      mat-icon-button
+      color="warn"
+      class="delete-btn"
+      aria-label="Ta bort"
+      (click)="remove(t.id)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
   }
-</mat-list>
+</mat-nav-list>

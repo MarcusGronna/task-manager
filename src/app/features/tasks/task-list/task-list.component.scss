@@ -1,3 +1,36 @@
-.title {margin: 0 8px}
-.status { margin-left: auto}
-.status.done { color: green}
+/* list-behållare */
+.task-list {
+  padding-inline: 1rem;
+}
+
+/* en rad --------------------------------------------------------- */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding-block: .5rem;
+cursor: grab;
+
+  &:hover { background: rgba(0 0 0 / .04); }
+}
+
+/* kryssruta lite närmare texten  */
+.check { margin-inline-end: .25rem; }
+
+/* titel & meta-text */
+.meta {
+  > strong { font-weight: 600; }
+  > small  { color: var(--color-muted); }
+}
+
+/* färg + genomstrykning när klar */
+.task-item-done {
+  .meta strong { text-decoration: line-through; color: var(--color-muted); }
+}
+
+/* spacer som trycker chip + delete till höger */
+.spacer { flex: 1 1 auto; }
+
+/* delete-knappen lite luft från kanten */
+.delete-btn { margin-inline-start: .25rem; }
+

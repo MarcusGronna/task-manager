@@ -1,4 +1,83 @@
-/* You can add global styles to this file, and also import other style files */
+/* ======================================================================
+   GLOBAL STYLES  –  variabler + Angular-Material 3-tema
+   ==================================================================== */
 
+/* ---------- IMPORTS ---------- */
+@use '@angular/material' as mat;            // M3-API
+@use 'sass:map';
+
+/* ---------- Bas-färger som både Sass- och CSS-variabler ------------ */
+$color-primary-hex : #5e7d63;        /* hex som Sass känner igen        */
+$color-accent-hex  : #c3a484;
+
+:root {
+  --color-primary:    #5e7d63;   /* skogsgrön               */
+  --color-accent:     #c3a484;   /* ljusbrun / orange       */
+  --color-bg:         #f5f0e6;   /* beige bakgrund          */
+  --color-text:       #333333;
+}
+
+/* ---------- SCSS-variabler ----------------------------------------- */
+$color-primary : var(--color-primary);
+$color-accent  : var(--color-accent);
+$color-bg      : var(--color-bg);
+$color-text    : var(--color-text);
+
+/* ---------- Paletter & typsnitt ------------------------------------ */
+$primary  : mat.$green-palette;
+$tertiary : mat.$orange-palette;        /* accent ersätter secondary  */
+$font-primary: 'Poppins', sans-serif;
+
+/* ---------- Skapa M3-tema ------------------------------------------ */
+$my-theme: mat.define-theme((
+  color: (
+    primary   : $primary,
+    tertiary  : $tertiary,
+    theme-type: light,
+  ),
+  typography: (
+    plain-family: $font-primary,
+  ),
+));
+
+/* Tema-CSS måste ligga **inne i en selektor** i M3 */
+:root {                   /* appens globala scope */
+  @include mat.all-component-themes($my-theme);
+}
+
+/* ======================================================================
+   BASE / LAYOUT
+   ==================================================================== */
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body {
+  margin: 0;
+  font-family: $font-primary;
+  background: $color-bg;
+  color: $color-text;
+  line-height: 1.6;
+}
+
+/* Sticky top-bar */
+.mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Flex-spacer i toolbar */
+.spacer { flex: 1 1 auto; }
+
+/* Accentknapp – egen klass utanför Material-färgschemat */
+.btn-accent {
+  background: $color-primary;
+  color: #fff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: darken($color-primary-hex, 8%);  
+  }
+}

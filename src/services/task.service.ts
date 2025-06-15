@@ -113,17 +113,24 @@ export class TaskService {
   // -------------------------------------------------------------------------
   //  TOGGLE done (PATCH /tasks/:id)
   // -------------------------------------------------------------------------
-  toggle(id: string, done: boolean): Observable<Task> {
-    return this.http.patch<Task>(`${this.base}/${id}`, { done }).pipe(
-      tap((changed) => {
+  toggle(id: string | number, done: boolean) {
+    /* 1. Hämta originalet ur cachen */
+    const original = this._tasks$.value.find((t) => t.id === id);
+    if (!original) return EMPTY; // nothing to update → avsluta tyst
+
+    /* 2. Skapa en uppdaterad kopia */
+    const updated: Task = { ...original, done };
+
+    /* 3. PUT – vissa back-end (in-memory) svarar med null ⇒ fall-back till vår kopia */
+    return this.http.put<Task | null>(`${this.base}/${id}`, updated).pipe(
+      tap((response) => {
+        const task = response ?? updated; // om null ⇒ använd vår lokala kopia
         this._tasks$.next(
-          this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
+          this._tasks$.value.map((t) => (t.id === task.id ? task : t))
         );
-        this.saveToLocalStorage();
       })
     );
   }
-
   // -------------------------------------------------------------------------
   //  DELETE (DELETE /tasks/:id)
   // -------------------------------------------------------------------------

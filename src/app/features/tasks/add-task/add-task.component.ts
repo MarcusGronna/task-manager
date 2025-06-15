@@ -21,6 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TaskService } from '../../../../services/task.service';
 import { TaskCreateDto } from '../../../models/task-create.dto';
 import { TaskPriority, Task } from '../../../models/task.model';
@@ -47,6 +49,8 @@ interface TaskForm {
     MatSelectModule,
     MatNativeDateModule,
     MatDatepickerModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   templateUrl: './add-task.component.html',
   styleUrl: './add-task.component.scss',
@@ -111,10 +115,16 @@ export class AddTaskComponent implements OnInit {
   //---------------------------------------------------------------------------
   //  UX-hjälp: lägg till x dagar på deadline
   //---------------------------------------------------------------------------
-  plusDays(days: number) {
+  // Hjälpknapp ± x dagar  (byter bara namn för konsekvens)
+  shiftDeadline(days: number) {
     const d = new Date(this.form.controls.deadline.value);
     d.setDate(d.getDate() + days);
     this.form.controls.deadline.setValue(d);
+  }
+
+  // plusDays → anropa shiftDeadline så ingen annan kod bryts
+  plusDays(days: number) {
+    this.shiftDeadline(days);
   }
 
   //---------------------------------------------------------------------------

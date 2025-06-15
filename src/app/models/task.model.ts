@@ -12,7 +12,7 @@ export interface Task {         // kontrakt för en uppgifts-post,
   projectId: string;             // ID,
   title: string;                // titel på uppgiften,
   description?: string;         // valfri beskrivning på uppgiften,
-  done: boolean;    // true om uppgiften är klar,
+  done: boolean;                // true om uppgiften är klar,
   priority: TaskPriority;            
   deadline: string;
   createdAt?: Date;             // valfritt - datum när posten skapades
