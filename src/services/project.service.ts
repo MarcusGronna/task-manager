@@ -4,10 +4,10 @@ import {
   signal,
   computed,
   effect,
-  toObservable,
   WritableSignal,
 } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, tap, map } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Observable, map, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Project } from '../app/models/project.model';
 import { environment } from '../environments/environment';
@@ -64,7 +64,7 @@ export class ProjectService {
   getAll(): Observable<Project[]> {
     this.http
       .get<Project[]>(this.base) // hämta en gång
-      .subscribe((list) => this._projects$.next(list)); // fyll cachen
+      .subscribe((list) => this._projects.set(list)); // signal-setter
     return this.projects$; // levande ström
   }
 

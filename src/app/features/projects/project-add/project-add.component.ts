@@ -50,6 +50,7 @@ export class ProjectAddComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   project!: Project;
+  readonly projectsSig = this.projectSvc.filteredProjects;
 
   isEdit = false;
   private id!: string;

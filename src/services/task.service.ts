@@ -15,9 +15,25 @@
  * https://expressjs.com/en/4x/api.html#app.use
  */
 
-import { inject, Injectable } from '@angular/core'; // DI-verktyg
+import {
+  inject,
+  Injectable,
+  signal,
+  computed,
+  effect,
+  WritableSignal,
+} from '@angular/core'; // DI-verktyg
 import { HttpClient } from '@angular/common/http'; // HTTP-klient :
-import { Observable, tap, EMPTY, catchError, BehaviorSubject, map } from 'rxjs'; // RxJS strömtyp
+import {
+  Observable,
+  tap,
+  EMPTY,
+  catchError,
+  BehaviorSubject,
+  map,
+  of,
+} from 'rxjs'; // RxJS strömtyp
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Task } from '../app/models/task.model'; // mitt interface/datamodell
 import { TaskCreateDto } from '../app/models/task-create.dto'; // CREATE-DTO
 import { environment } from '../environments/environment'; // miljö-konstant
@@ -36,19 +52,37 @@ export class TaskService {
   // -------------------------------------------------------------------------
   //  Lokal cache – gör att UI uppdateras direkt utan extra GET
   // -------------------------------------------------------------------------
-  private _tasks$ = new BehaviorSubject<Task[]>([]); // init tom lista
-  tasks$ = this._tasks$.asObservable(); // readonly-ström till komponenter
+  // private _tasks$ = new BehaviorSubject<Task[]>([]); // init tom lista
+  // tasks$ = this._tasks$.asObservable(); // readonly-ström till komponenter
+  private _tasks: WritableSignal<Task[]> = signal([] as Task[]);
+  readonly tasks$ = toObservable(this._tasks);
+  readonly tasks = this._tasks;
 
   // Hämta initial data en gång
   constructor() {
     this.refresh();
+
+    /* Synka automatiskt till localStorage varje gång listan ändras */
+    effect(() => {
+      localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem(LS_KEY) ?? '{}'),
+          tasks: this._tasks(), // <-- signal-anrop
+        })
+      );
+    });
   }
 
   // Get /tasks - laddar allt och puttar in i cache
+  // private refresh() {
+  //   this.http
+  //     .get<Task[]>(this.base)
+  //     .subscribe((list) => this._tasks$.next(list));
+  // }
+
   private refresh() {
-    this.http
-      .get<Task[]>(this.base)
-      .subscribe((list) => this._tasks$.next(list));
+    this.http.get<Task[]>(this.base).subscribe((list) => this._tasks.set(list));
   }
 
   // -------------------------------------------------------------------------
@@ -77,10 +111,7 @@ export class TaskService {
   // -------------------------------------------------------------------------
   add(dto: TaskCreateDto): Observable<Task> {
     return this.http.post<Task>(this.base, dto).pipe(
-      tap((newTask) => {
-        this._tasks$.next([...this._tasks$.value, newTask]);
-        this.saveToLocalStorage();
-      }),
+      tap((newTask) => this._tasks.update((list) => [...list, newTask])),
       catchError((err) => {
         console.error(err);
         return EMPTY;
@@ -95,8 +126,8 @@ export class TaskService {
     return this.http.put<Task>(`${this.base}/${task.id}`, task).pipe(
       map((res) => res ?? task),
       tap((changed) =>
-        this._tasks$.next(
-          this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
+        this._tasks.update((list) =>
+          list.map((t) => (t.id === changed.id ? changed : t))
         )
       )
     );
@@ -107,7 +138,7 @@ export class TaskService {
   // -------------------------------------------------------------------------
   toggle(id: string, done: boolean): Observable<Task> {
     /* 1. Hämta originalet ur cachen */
-    const original = this._tasks$.value.find((t) => t.id === id);
+    const original = this._tasks().find((t: Task) => t.id === id);
     if (!original) return EMPTY; // nothing to update → avsluta tyst
 
     /* 2. Skapa en uppdaterad kopia */
@@ -116,32 +147,27 @@ export class TaskService {
     /* 3. PUT – vissa back-end (in-memory) svarar med null ⇒ fall-back till vår kopia */
     return this.http.put<Task>(`${this.base}/${id}`, updated).pipe(
       map((res) => res ?? updated), // vissa versioner returnerar null
-      tap((changed) => {
-        this._tasks$.next(
-          this._tasks$.value.map((t) => (t.id === changed.id ? changed : t))
-        );
-        this.saveToLocalStorage(); // LS synk
-      })
+      tap((changed) =>
+        this._tasks.update((list) =>
+          list.map((t) => (t.id === changed.id ? changed : t))
+        )
+      )
     );
   }
   // -------------------------------------------------------------------------
   //  DELETE (DELETE /tasks/:id)
   // -------------------------------------------------------------------------
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`).pipe(
-      tap(() => {
-        this._tasks$.next(this._tasks$.value.filter((t) => t.id !== id));
-        this.saveToLocalStorage();
-      })
-    );
+    return this.http
+      .delete<void>(`${this.base}/${id}`)
+      .pipe(
+        tap(() => this._tasks.update((list) => list.filter((t) => t.id !== id)))
+      );
   }
 
   // Röj alla tasks som hör till ett projekt (anropas av ProjectService)
   clearByProject(projectId: string) {
-    this._tasks$.next(
-      this._tasks$.value.filter((t) => t.projectId !== projectId)
-    );
-    this.saveToLocalStorage();
+    this._tasks.update((list) => list.filter((t) => t.projectId !== projectId));
   }
 
   // -------------------------------------------------------------------------
@@ -149,21 +175,9 @@ export class TaskService {
   // -------------------------------------------------------------------------
   persistOrder(projectId: string, list: Task[]): void {
     // 1. uppdatera cache direkt
-    this._tasks$.next([
-      ...this._tasks$.value.filter((t) => t.projectId !== projectId),
-      ...list, // redan sorterad lista
+    this._tasks.update(() => [
+      ...this._tasks().filter((t) => t.projectId !== projectId), // de som inte rörs
+      ...list, // sorterad lista för projektet
     ]);
-
-    // 2. skriv tillbaka till localStorage
-    this.saveToLocalStorage();
-  }
-
-  // -------------------------------------------------------------------------
-  //  Helper: skriv hela task-arrayen till LS (behåller projects-delen)
-  // -------------------------------------------------------------------------
-  private saveToLocalStorage() {
-    const stored = JSON.parse(localStorage.getItem(LS_KEY) ?? '{}');
-    const merged = { ...stored, tasks: this._tasks$.value };
-    localStorage.setItem(LS_KEY, JSON.stringify(merged));
   }
 }
