@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProjectService } from '../../../../services/project.service';
 import { Project } from '../../../models/project.model';
+import { ShiftDateButtonsComponent } from '../../../shared/components/shift-date-buttons/shift-date-buttons.component';
 
 // --- Form-typ -------------------------------------------------------------
 interface ProjectForm {
@@ -40,6 +41,7 @@ interface ProjectForm {
     MatNativeDateModule,
     MatIconModule,
     MatTooltipModule,
+    ShiftDateButtonsComponent,
   ],
   templateUrl: './project-add.component.html',
   styleUrl: './project-add.component.scss',
@@ -50,6 +52,7 @@ export class ProjectAddComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   project!: Project;
+  readonly projectsSig = this.projectSvc.filteredProjects;
 
   isEdit = false;
   private id!: string;
@@ -100,10 +103,9 @@ export class ProjectAddComponent implements OnInit {
       completed: this.isEdit ? this.project!.completed : false,
     };
 
-    const req$ = this.isEdit
+    (this.isEdit
       ? this.projectSvc.update({ id: this.id, ...dto })
-      : this.projectSvc.add(dto);
-
-    req$.subscribe(() => this.router.navigate(['/projects']));
+      : this.projectSvc.add(dto)
+    ).subscribe(() => this.router.navigate(['/projects']));
   }
 }

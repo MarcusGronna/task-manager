@@ -4,7 +4,9 @@ https://material.angular.dev/components/checkbox/overview
 https://angular.dev/api/common/AsyncPipe 
 -->
 
-<button mat-stroked-button (click)="back()">← Till projekt</button>
+<button mat-raised-button (click)="back()" class="back-button">
+  ← Till projekt
+</button>
 
 <h2>Uppgifter</h2>
 
@@ -48,12 +50,13 @@ https://angular.dev/api/common/AsyncPipe
   <!-- Visa BARA filtrerade uppgifter, men spara full lista för sort() -->
   @for ( t of (allTasks | taskFilter:searchCtrl.value:selectedStatus); track
   t.id ) {
-  <!-- div istället för <a> -> inga fel med <mat-checkbox>  -->
+
   <div
     mat-list-item
     class="task-item"
     cdkDrag
     [ngClass]="{ 'task-item-done': t.done }"
+    [appOverdue]="t"
   >
     <!-- Checkruta ------------------------------------------------- -->
     <mat-checkbox

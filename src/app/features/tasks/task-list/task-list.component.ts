@@ -26,6 +26,7 @@ import {
 import { switchMap, tap } from 'rxjs/operators';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TaskFilterPipe } from '../../../shared/pipes/task-filter.pipe';
+import { OverdueDirective } from '../../../shared/directives/overdue.directive';
 
 @Component({
   selector: 'app-task-list',
@@ -49,6 +50,7 @@ import { TaskFilterPipe } from '../../../shared/pipes/task-filter.pipe';
     RouterLink,
     NgClass,
     TaskFilterPipe,
+    OverdueDirective,
   ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
