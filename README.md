@@ -1,59 +1,65 @@
-# TaskManager
+# 🗂️ Task Manager – Angular 17 + Signals
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.5.
+En komplett **Task Manager-app** som demonstrerar modern Angular-utveckling helt utan autentisering.  
+Alla data lagras lokalt via en **Local-Storage-interceptor**, så ingen extern back-end krävs.
 
-## Development server
+---
 
-To start a local development server, run:
+docs/TaskManager.png
 
-```bash
-ng serve
-```
+# installera beroenden
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+npm install
 
-## Code scaffolding
+# starta dev-server ⇒ http://localhost:4200
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+npm start # alias: ng serve -o
 
-```bash
-ng generate component component-name
-```
+| Område                | Detaljer                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Projekthantering**  | Lista / skapa / redigera / ta bort • Sök & statusfilter                                                          |
+| **Uppgiftshantering** | Lista / skapa / redigera / ta bort • Markera ✔️ klar / 🕓 pågår • Prioritet & deadline • Drag-and-drop-sortering |
+| **Dashboard**         | Översikt av antal projekt, uppgifter & % klara                                                                   |
+| **Delade byggstenar** | `ShiftDateButtonsComponent`, `OverdueDirective`, `TaskFilterPipe`                                                |
+| **Signals**           | `ProjectService` & `TaskService` använder **WritableSignal**; komponenter konsumerar via `toObservable()`        |
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+| Paket                        | Syfte                        |
+| ---------------------------- | ---------------------------- |
+| **Angular 17** (stand-alone) | SPA-ramverket                |
+| **Angular Material 17**      | UI-komponenter               |
+| **RxJS 7 + Signals**         | Dataflöden & reaktivt state  |
+| **Angular CDK**              | Drag-and-drop-funktionalitet |
+| **Karma / Jasmine**          | Enhetstester                 |
 
-```bash
-ng generate --help
-```
+src/
+├─ app/
+│ ├─ features/
+│ │ ├─ dashboard/
+│ │ ├─ projects/
+│ │ └─ tasks/
+│ ├─ shared/
+│ │ ├─ components/ ShiftDateButtonsComponent
+│ │ ├─ directives/ OverdueDirective
+│ │ └─ pipes/ TaskFilterPipe
+│ ├─ models/ Project & Task-interfaces
+│ └─ app.routes.ts Routingdefinition
+├─ services/ ProjectService • TaskService • LS-interceptor
+└─ environments/ apiUrl = '/api'
 
-## Building
+Local-Storage-interceptor
+Fångar alla HttpClient-anrop mot /projects & /tasks.
 
-To build the project run:
+Läser/uppdaterar nyckeln localStorage['tm-db'].
 
-```bash
-ng build
-```
+Vill du byta till en riktig back-end? – ta bara bort interceptorn.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Reflektion & designval
+Signals > RxJS – enklare state, memoiserade selectors.
 
-## Running unit tests
+Local-Storage-back-end – offline-stöd + snabb Netlify-deploy.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Stand-alone-komponenter – minimal boilerplate, explicita imports:.
 
-```bash
-ng test
-```
+Strict-typed Reactive Forms – TypeScript garanterar fältens typer.
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Custom pipe + direktiv + generisk komponent uppfyller kursens avancerade krav.
