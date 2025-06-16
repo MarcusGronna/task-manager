@@ -1,5 +1,7 @@
 # 🗂️ Task Manager – Angular 17 + Signals
 
+https://marcus-task-manager.netlify.app/
+
 En komplett **Task Manager-app** som demonstrerar modern Angular-utveckling helt utan autentisering.  
 Alla data lagras lokalt via en **Local-Storage-interceptor**, så ingen extern back-end krävs.
 
@@ -23,28 +25,13 @@ npm start # alias: ng serve -o
 | **Delade byggstenar** | `ShiftDateButtonsComponent`, `OverdueDirective`, `TaskFilterPipe`                                                |
 | **Signals**           | `ProjectService` & `TaskService` använder **WritableSignal**; komponenter konsumerar via `toObservable()`        |
 
-| Paket                        | Syfte                        |
-| ---------------------------- | ---------------------------- |
-| **Angular 17** (stand-alone) | SPA-ramverket                |
-| **Angular Material 17**      | UI-komponenter               |
-| **RxJS 7 + Signals**         | Dataflöden & reaktivt state  |
-| **Angular CDK**              | Drag-and-drop-funktionalitet |
-| **Karma / Jasmine**          | Enhetstester                 |
-
-src/
-├─ app/
-│ ├─ features/
-│ │ ├─ dashboard/
-│ │ ├─ projects/
-│ │ └─ tasks/
-│ ├─ shared/
-│ │ ├─ components/ ShiftDateButtonsComponent
-│ │ ├─ directives/ OverdueDirective
-│ │ └─ pipes/ TaskFilterPipe
-│ ├─ models/ Project & Task-interfaces
-│ └─ app.routes.ts Routingdefinition
-├─ services/ ProjectService • TaskService • LS-interceptor
-└─ environments/ apiUrl = '/api'
+| Paket                      | Syfte                        |
+| -------------------------- | ---------------------------- |
+| **Angular ** (stand-alone) | SPA-ramverket                |
+| **Angular Material **      | UI-komponenter               |
+| **RxJS + Signals**         | Dataflöden & reaktivt state  |
+| **Angular CDK**            | Drag-and-drop-funktionalitet |
+| **Karma / Jasmine**        | Enhetstester                 |
 
 Local-Storage-interceptor
 Fångar alla HttpClient-anrop mot /projects & /tasks.
