@@ -1,4 +1,4 @@
-# 🗂️ Task Manager – Angular 17 + Signals
+# 🗂️ Task Manager – Angular
 
 https://marcus-task-manager.netlify.app/
 
