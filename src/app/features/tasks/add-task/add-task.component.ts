@@ -26,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TaskService } from '../../../../services/task.service';
 import { TaskCreateDto } from '../../../models/task-create.dto';
 import { TaskPriority, Task } from '../../../models/task.model';
+import { ShiftDateButtonsComponent } from '../../../shared/components/shift-date-buttons/shift-date-buttons.component';
 
 // ------------------------------------------------------------
 //  Typed Form interface – alla kontroller får rätt typ
@@ -51,6 +52,7 @@ interface TaskForm {
     MatDatepickerModule,
     MatIconModule,
     MatTooltipModule,
+    ShiftDateButtonsComponent,
   ],
   templateUrl: './add-task.component.html',
   styleUrl: './add-task.component.scss',

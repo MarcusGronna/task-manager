@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProjectService } from '../../../../services/project.service';
 import { Project } from '../../../models/project.model';
+import { ShiftDateButtonsComponent } from '../../../shared/components/shift-date-buttons/shift-date-buttons.component';
 
 // --- Form-typ -------------------------------------------------------------
 interface ProjectForm {
@@ -40,6 +41,7 @@ interface ProjectForm {
     MatNativeDateModule,
     MatIconModule,
     MatTooltipModule,
+    ShiftDateButtonsComponent,
   ],
   templateUrl: './project-add.component.html',
   styleUrl: './project-add.component.scss',
