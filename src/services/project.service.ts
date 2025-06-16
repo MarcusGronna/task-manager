@@ -13,6 +13,8 @@ import { Project } from '../app/models/project.model';
 import { environment } from '../environments/environment';
 import { TaskService } from './task.service';
 
+const LS_KEY = 'task-manager-db';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,10 +23,14 @@ export class ProjectService {
   private base = `${environment.apiUrl}/projects`;
   private taskSvc = inject(TaskService);
 
-  // private _projects$ = new BehaviorSubject<Project[]>([]);
-  // projects$ = this._projects$.asObservable();
+  // -------------------------------------------------------------------------
+  //  CACHE som signal
+  // -------------------------------------------------------------------------
   private _projects: WritableSignal<Project[]> = signal([] as Project[]);
-  readonly projects = this._projects.asReadonly(); // getter i komponenter
+  readonly projects = this._projects.asReadonly();
+
+  //  Stream-variant av signalen (kan pipe:as i komponenter)
+  readonly projects$ = toObservable(this.projects);
 
   search = signal('');
   statusFilter = signal<'all' | 'active' | 'done'>('all');
@@ -44,28 +50,37 @@ export class ProjectService {
       );
   });
 
+  // -------------------------------------------------------------------------
+  //  KONSTRUKTOR – ladda *en gång* och starta LS-synk
+  // -------------------------------------------------------------------------
   constructor() {
     // läs från localStorage
-    const raw = localStorage.getItem('tm-db');
+    const raw = localStorage.getItem(LS_KEY);
     if (raw) {
       const { projects = [] } = JSON.parse(raw);
       this._projects.set(projects);
     }
-    // automatiskt  → localStorage
+
+    // hämta från back-end EN gång om interceptorn används
+    this.http
+      .get<Project[]>(this.base)
+      .subscribe((list) => this._projects.set(list));
+
+    // signal → local-storage (autosave)
     effect(() => {
       localStorage.setItem(
-        'tm-db',
-        JSON.stringify({ projects: this._projects() })
+        LS_KEY,
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem(LS_KEY) ?? '{}'),
+          projects: this._projects(),
+        })
       );
     });
   }
 
   // GET /projects
   getAll(): Observable<Project[]> {
-    this.http
-      .get<Project[]>(this.base) // hämta en gång
-      .subscribe((list) => this._projects.set(list)); // signal-setter
-    return this.projects$; // levande ström
+    return this.projects$; // redan kopplat till signalen
   }
 
   getOne(id: string) {
@@ -80,32 +95,12 @@ export class ProjectService {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
     };
-    // SIG-START: uppdatera via Signal
+    //  uppdatera via Signal
     this._projects.update((list) => [...list, p]);
-    // SIG-END
+
     return of(p); // dummy-observable så API:et ser likadant ut
   }
 
-  // add(dto: Omit<Project, 'id' | 'createdAt'>) {
-  //   return this.http
-  //     .post<Project>(this.base, dto)
-  //     .pipe(tap((p) => this._projects$.next([...this._projects$.value, p])));
-  // }
-
-  // PUT /projects/:id
-  // update(p: Project) {
-  //   return this.http
-  //     .put<Project>(`${this.base}/${p.id}`, p)
-  //     .pipe(
-  //       tap(() =>
-  //         this._projects$.next(
-  //           this._projects$.value.map((x) =>
-  //             x.id === p.id ? { ...x, ...p } : x
-  //           )
-  //         )
-  //       )
-  //     );
-  // }
   update(patch: Project) {
     this._projects.update((list) =>
       list.map((p) => (p.id === patch.id ? { ...p, ...patch } : p))
@@ -113,23 +108,8 @@ export class ProjectService {
     return of(patch);
   }
 
-  // DELETE /projects/:id
-  // remove(id: string) {
-  //   return this.http.delete<void>(`${this.base}/${id}`).pipe(
-  //     tap(() => {
-  //       // 1. uppdatera project-listan i minnescachen (fanns redan)
-  //       this._projects$.next(this._projects$.value.filter((p) => p.id !== id));
-
-  //       // 2. röj tasks ur TaskService-cachen
-  //       this.taskSvc.clearByProject(id);
-  //     })
-  //   );
-  // }
-
   remove(id: string) {
     this._projects.update((list) => list.filter((p) => p.id !== id));
     return of(void 0);
   }
-
-  projects$ = toObservable(this.projects);
 }

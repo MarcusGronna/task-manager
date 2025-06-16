@@ -88,22 +88,21 @@ export class AddTaskComponent implements OnInit {
   //  Lifecycle
   //---------------------------------------------------------------------------
   ngOnInit(): void {
-    /* Läs ev. taskId (null vid create) */
+    // Läs ev. taskId (null vid create)
     this.taskId = this.route.snapshot.paramMap.get('taskId') || '';
 
-    /* EDIT-läge? → hämta uppgiften och fyll formuläret */
+    // EDIT-läge? → hämta uppgiften och fyll formuläret
     if (this.taskId) {
       this.isEdit = true;
 
       this.taskService.getOne(this.taskId).subscribe((task) => {
         if (!task) {
-          // Guard – hittades ej
           console.error('Uppgiften hittades inte');
           this.router.navigate(['/projects', this.projectId, 'tasks']);
           return;
         }
 
-        /* Patcha formuläret – datepicker kräver Date-objekt */
+        // Patcha formuläret – datepicker kräver Date-objekt
         this.form.patchValue({
           ...task,
           deadline: new Date(task.deadline),
@@ -115,14 +114,14 @@ export class AddTaskComponent implements OnInit {
   //---------------------------------------------------------------------------
   //  UX-hjälp: lägg till x dagar på deadline
   //---------------------------------------------------------------------------
-  // Hjälpknapp ± x dagar  (byter bara namn för konsekvens)
+  // Hjälpknapp ± x dagar
   shiftDeadline(days: number) {
     const d = new Date(this.form.controls.deadline.value);
     d.setDate(d.getDate() + days);
     this.form.controls.deadline.setValue(d);
   }
 
-  // plusDays → anropa shiftDeadline så ingen annan kod bryts
+  // plusDays -> anropa shiftDeadline så ingen annan kod bryts
   plusDays(days: number) {
     this.shiftDeadline(days);
   }
@@ -140,7 +139,7 @@ export class AddTaskComponent implements OnInit {
       projectId: this.projectId,
     };
 
-    /* Välj rätt anrop beroende på läge */
+    // Välj rätt anrop beroende på läge
     const req$ = this.isEdit
       ? this.taskService.update({ id: this.taskId, ...dto } as Task)
       : this.taskService.add(dto);

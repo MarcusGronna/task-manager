@@ -1,23 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import {
+  commonTestImports,
+  commonTestProviders,
+} from '../../../../testing/test-utensils';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ProjectAddComponent } from './project-add.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 describe('ProjectAddComponent', () => {
-  let component: ProjectAddComponent;
   let fixture: ComponentFixture<ProjectAddComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProjectAddComponent]
-    })
-    .compileComponents();
+      imports: [ProjectAddComponent, ...commonTestImports],
+      providers: [...commonTestProviders, provideAnimations()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectAddComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('skapar komponenten', () =>
+    expect(fixture.componentInstance).toBeTruthy());
 });

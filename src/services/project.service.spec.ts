@@ -1,16 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ProjectService } from './project.service';
+import { commonTestProviders } from '../testing/test-utensils';
 
 describe('ProjectService', () => {
-  let service: ProjectService;
+  beforeEach(() =>
+    TestBed.configureTestingModule({ providers: commonTestProviders })
+  );
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ProjectService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  it('skapas', () => expect(TestBed.inject(ProjectService)).toBeTruthy());
 });
