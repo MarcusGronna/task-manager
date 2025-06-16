@@ -5,7 +5,7 @@ Alla data lagras lokalt via en **Local-Storage-interceptor**, så ingen extern b
 
 ---
 
-docs/TaskManager.png
+![Översikt av appen](docs/TaskManager.png)
 
 # installera beroenden
 
