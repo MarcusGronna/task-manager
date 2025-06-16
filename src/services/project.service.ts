@@ -66,7 +66,7 @@ export class ProjectService {
       .get<Project[]>(this.base)
       .subscribe((list) => this._projects.set(list));
 
-    // signal → local-storage (autosave)
+    // signal -> local-storage (autosave)
     effect(() => {
       localStorage.setItem(
         LS_KEY,
@@ -80,7 +80,7 @@ export class ProjectService {
 
   // GET /projects
   getAll(): Observable<Project[]> {
-    return this.projects$; // redan kopplat till signalen
+    return this.projects$; // kopplat till signalen
   }
 
   getOne(id: string) {
