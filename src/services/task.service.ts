@@ -74,13 +74,6 @@ export class TaskService {
     });
   }
 
-  // Get /tasks - laddar allt och puttar in i cache
-  // private refresh() {
-  //   this.http
-  //     .get<Task[]>(this.base)
-  //     .subscribe((list) => this._tasks$.next(list));
-  // }
-
   private refresh() {
     this.http.get<Task[]>(this.base).subscribe((list) => this._tasks.set(list));
   }

@@ -7,7 +7,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Project } from '../app/models/project.model';
 import { environment } from '../environments/environment';
@@ -90,26 +90,34 @@ export class ProjectService {
   }
 
   add(dto: Omit<Project, 'id' | 'createdAt'>) {
-    const p: Project = {
-      ...dto,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    //  uppdatera via Signal
-    this._projects.update((list) => [...list, p]);
+    const body = { ...dto, createdAt: new Date().toISOString() };
 
-    return of(p); // dummy-observable så API:et ser likadant ut
+    return this.http
+      .post<Project>(this.base, body)
+      .pipe(tap((p) => this._projects.update((list) => [...list, p])));
   }
 
   update(patch: Project) {
-    this._projects.update((list) =>
-      list.map((p) => (p.id === patch.id ? { ...p, ...patch } : p))
-    );
-    return of(patch);
+    return this.http
+      .put<Project>(`${this.base}/${patch.id}`, patch)
+      .pipe(
+        tap((changed) =>
+          this._projects.update((list) =>
+            list.map((p) => (p.id === changed.id ? changed : p))
+          )
+        )
+      );
   }
 
   remove(id: string) {
-    this._projects.update((list) => list.filter((p) => p.id !== id));
-    return of(void 0);
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      tap(() => {
+        // 1. Ta bort projektet ur cachen
+        this._projects.update((list) => list.filter((p) => p.id !== id));
+
+        // 2. Rensa bort alla tasks som hör till projektet
+        this.taskSvc.clearByProject(id);
+      })
+    );
   }
 }
